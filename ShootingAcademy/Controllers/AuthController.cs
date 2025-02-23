@@ -16,7 +16,7 @@ namespace ShootingAcademy.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private static Dictionary<string, int> RefreshTokens = new Dictionary<string, int>();
+        private static Dictionary<string, string> RefreshTokens = new Dictionary<string, string>();
         private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
 
@@ -61,13 +61,13 @@ namespace ShootingAcademy.Controllers
                         builder.Append(b.ToString("x2"));
                     }
 
-                    User? user = _userService.AddUserAsync(form); 
+                    User? user = await _userService.AddUserAsync(form); 
 
                     var token = GenerateAccessToken(user);
 
                     var refreshToken = Guid.NewGuid().ToString();
 
-                    RefreshTokens[refreshToken] = user.Id;
+                    RefreshTokens[refreshToken] = user.Id.ToString();
 
                     return Ok(new AuthResponse
                     {
@@ -91,7 +91,7 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                User? user = _userService.FindUserByIdAsync(form);
+                User? user = await _userService.FindUserByIdAsync(form);
 
                 if (user != null)
                 {
@@ -99,7 +99,7 @@ namespace ShootingAcademy.Controllers
 
                     var refreshToken = Guid.NewGuid().ToString();
 
-                    RefreshTokens[refreshToken] = user.Id;
+                    RefreshTokens[refreshToken] = user.Id.ToString();
 
                     return Ok(new AuthResponse
                     {
