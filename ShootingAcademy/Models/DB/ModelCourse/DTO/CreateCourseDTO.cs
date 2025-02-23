@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace ShootingAcademy.Models.DB.ModelUser.DTO
+namespace ShootingAcademy.Models.DB.ModelCourse.DTO
 {
     public class CreateCourseDTO
     {
