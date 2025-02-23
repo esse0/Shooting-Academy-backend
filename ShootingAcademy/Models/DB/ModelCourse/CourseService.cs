@@ -1,14 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShootingAcademy.Models.DB.ModelUser.DTO;
-using ShootingAcademy.Models.DB.ModelUser;
+using ShootingAcademy.Models.DB.ModelCourse.DTO;
+using ShootingAcademy.Models.DB.ModelCourse;
 
 namespace ShootingAcademy.Models.DB.ModelCourse
 {
-    public class CourseService
+    public class CourseService : ICourseService
     {
-        public Course Get()
-        {
-            return 
-        } 
+        
     }
 }
