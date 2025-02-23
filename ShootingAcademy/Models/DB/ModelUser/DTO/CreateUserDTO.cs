@@ -21,7 +21,7 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
         public required string PasswordHash { get; set; }
         public Guid RoleId { get; set; }
 
-        public static User ToUser(AuthRequest createUserDTO)
+        public static User ToUser(AuthRegisterRequest createUserDTO)
         {
             return new User
             {
