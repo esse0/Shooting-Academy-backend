@@ -39,6 +39,11 @@ namespace ShootingAcademy.Models.DB.ModelUser
         {
             return new GetUserDto
             {
+                FirstName = user.FirstName,
+                SecoundName = user.SecoundName,
+                PatronymicName = user.PatronymicName,
+                Age = user.Age,
+                Grade = user.Grade,
                 Email = user.Email,
                 PasswordHash = user.PasswordHash,
                 RoleId = user.RoleId,
