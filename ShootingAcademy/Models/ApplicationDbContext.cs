@@ -1,6 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShootingAcademy.Models.DB.Role;
-using ShootingAcademy.Models.DB.User;
+using ShootingAcademy.Models.DB.ModelRole;
+using ShootingAcademy.Models.DB.ModelUser;
 
 namespace ShootingAcademy.Models
 {
@@ -11,8 +11,8 @@ namespace ShootingAcademy.Models
 
         }
 
-        public DbSet<DB.User.User> users { get; set; }
-        public DbSet<DB.Role.Role> roles { get; set; }
+        public DbSet<User> users { get; set; }
+        public DbSet<Role> roles { get; set; }
 
 
     }
