@@ -1,5 +1,5 @@
 ﻿using ShootingAcademy.Models.DB.ModelCourse;
-using ShootingAcademy.Models.DB.ModelCourse;
+using ShootingAcademy.Models.DB.ModelCourse.DTO;
 
 namespace ShootingAcademy.Models.DB.ModelCourse
 {
