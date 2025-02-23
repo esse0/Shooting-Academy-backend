@@ -1,7 +1,7 @@
-﻿using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Http;
+﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using ShootingAcademy.Models;
+using ShootingAcademy.Models.Controllers.Course;
 
 namespace ShootingAcademy.Controllers
 {
@@ -16,7 +16,19 @@ namespace ShootingAcademy.Controllers
             this.dbContext = dbContext;
         }
 
+        [HttpGet("/GetMyCourseBannerType"), Authorize]
+        public IResult GetMyCourseBannerType()
+        {
+            try
+            {
+                MyCourseBannerType myCourseBannerType = new MyCourseBannerType();
 
-        
+                return Results.Ok();
+            }
+            catch
+            {
+                return Results.BadRequest();
+            }
+        }
     }
 }

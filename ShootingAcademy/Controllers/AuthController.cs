@@ -28,10 +28,10 @@ namespace ShootingAcademy.Controllers
         {
 
             var claims = new List<Claim>
-        {
+            {
             new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role.Name),
-        };
+            new Claim(ClaimTypes.Role, user.Role),
+            };
 
             var token = new JwtSecurityToken(
                 issuer: _configuration["JwtSettings:Issuer"],
@@ -71,7 +71,7 @@ namespace ShootingAcademy.Controllers
                     {
                         accessToken = new JwtSecurityTokenHandler().WriteToken(token),
                         refreshToken = refreshToken,
-                        role = user.Role.Name,
+                        role = user.Role,
                     });
                 }
             }
@@ -103,7 +103,7 @@ namespace ShootingAcademy.Controllers
                     {
                         accessToken = new JwtSecurityTokenHandler().WriteToken(token),
                         refreshToken = refreshToken,
-                        role = user.Role.Name,
+                        role = user.Role,
                     });
 
                 }

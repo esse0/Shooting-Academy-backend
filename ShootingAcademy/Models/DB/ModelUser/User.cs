@@ -23,13 +23,11 @@ namespace ShootingAcademy.Models.DB.ModelUser
         public string Country { get; set; }
 
         [Required]
-        public required string Email { get; set; }
+        public string Email { get; set; }
         [Required]
-        public required string PasswordHash { get; set; }
+        public string PasswordHash { get; set; }
 
-        public Guid RoleId { get; set; }
-        [ForeignKey(nameof(RoleId))]
-        public Role Role { get; set; }
+        public string Role { get; set; }
 
         public List<GroupMember> AthleteGroups { get; set; } = [];
         public List<Course> InstructoredCourses { get; set; } = [];
