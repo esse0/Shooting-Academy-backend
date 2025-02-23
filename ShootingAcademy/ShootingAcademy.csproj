@@ -6,16 +6,30 @@
     <ImplicitUsings>enable</ImplicitUsings>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <NoWarn>1701;1702;8618</NoWarn>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <NoWarn>1701;1702;8618</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Models\DB\ModelRole\DTO\**" />
+    <Compile Remove="wwwroot\**" />
+    <Content Remove="Models\DB\ModelRole\DTO\**" />
+    <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Models\DB\ModelRole\DTO\**" />
+    <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Models\DB\ModelRole\DTO\**" />
+    <None Remove="wwwroot\**" />
+  </ItemGroup>
+
   <ItemGroup>
     <PackageReference Include="Microsoft.AspNetCore.Authentication.JwtBearer" Version="8.0.13" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\DB\ModelRole\DTO\" />
-    <Folder Include="wwwroot\" />
   </ItemGroup>
 
 </Project>

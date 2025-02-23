@@ -4,10 +4,10 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShootingAcademy.Models.DB.ModelUser
 {
-    [Table("User")]
     public class User
     {
-        public int Id { get; set;  }
+        [Key]
+        public string Id { get; set;  }
 
         [Column(TypeName = "varchar(30)")]
         [Required]
@@ -19,7 +19,13 @@ namespace ShootingAcademy.Models.DB.ModelUser
         [Required]
         public required string SportsCategory { get; set; }
         public string RoleId { get; set; }
+        [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
 
+
+
+        public List<GroupMember> AthleteGroups { get; set; } = new();
+        public List<Statistic> Statistics { get; set; } = new();
+        public List<Course> Courses { get; set; } = new();
     }
 }

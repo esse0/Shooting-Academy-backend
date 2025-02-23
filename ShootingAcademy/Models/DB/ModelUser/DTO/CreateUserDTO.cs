@@ -22,7 +22,7 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
                 PasswordHash = createUserDTO.PasswordHash,
                 SportsCategory = createUserDTO.SportsCategory,
                 RoleId = createUserDTO.RoleId,
-            }
+            };
         }
     }
 }
