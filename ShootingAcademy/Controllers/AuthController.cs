@@ -46,13 +46,13 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] CreateUserDTO form)
+        public async Task<IActionResult> Register([FromBody] AuthRequest form)
         {
             try
             {
                 using (MD5 md5Hash = MD5.Create())
                 {
-                    byte[] bytes = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(form.PasswordHash));
+                    byte[] bytes = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(form.password));
                     StringBuilder builder = new StringBuilder();
                     foreach (byte b in bytes)
                     {

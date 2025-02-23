@@ -5,7 +5,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
 {
     public interface IUserService
     {
-        Task<User> AddUserAsync(CreateUserDTO userToCreate);
+        Task<User> AddUserAsync(AuthRequest userToCreate);
         Task UpdateUserAsync(UpdateUserDTO userToUpdate);
         Task DeleteUserAsync(User user);
         Task<User?> FindUserByIdAsync(GetUserDto getUserDto);
