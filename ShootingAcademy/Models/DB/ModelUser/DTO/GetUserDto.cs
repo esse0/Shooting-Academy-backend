@@ -9,8 +9,7 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
         [Required]
         public required string PasswordHash { get; set; }
         [Required]
-        public required string SportsCategory { get; set; }
-        public string RoleId { get; set; }
+        public Guid RoleId { get; set; }
 
         public static User ToUser(GetUserDto getUserDto)
         {
@@ -18,7 +17,6 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
             {
                 Email = getUserDto.Email,
                 PasswordHash = getUserDto.PasswordHash,
-                SportsCategory = getUserDto.SportsCategory,
                 RoleId = getUserDto.RoleId,
             };
         }

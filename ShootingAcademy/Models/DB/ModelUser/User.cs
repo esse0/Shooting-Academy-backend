@@ -10,21 +10,29 @@ namespace ShootingAcademy.Models.DB.ModelUser
         [Key]
         public Guid Id { get; set;  }
 
-        [Column(TypeName = "varchar(30)")]
+        [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string SecoundName { get; set; }
+        [Required]
+        public string PatronymicName { get; set; }
+
+        [Required]
+        public int Age { get; set; }
+
+        public string Grade { get; set; }
+        public string Country { get; set; }
+
         [Required]
         public required string Email { get; set; }
-        [Column(TypeName = "varchar(30)")]
         [Required]
         public required string PasswordHash { get; set; }
-        [Column(TypeName = "varchar(30)")]
-        [Required]
-        public required string SportsCategory { get; set; }
-        public string RoleId { get; set; }
+
+        public Guid RoleId { get; set; }
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
 
         public List<GroupMember> AthleteGroups { get; set; } = new();
-        public List<Statistic> Statistics { get; set; } = new();
         public List<Course> Courses { get; set; } = new();
       
         public static GetUserDto ToGetUserDto(User user)
@@ -33,7 +41,6 @@ namespace ShootingAcademy.Models.DB.ModelUser
             {
                 Email = user.Email,
                 PasswordHash = user.PasswordHash,
-                SportsCategory = user.SportsCategory,
                 RoleId = user.RoleId,
             };
         }

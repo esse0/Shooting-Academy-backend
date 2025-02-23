@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models.DB.ModelRole;
 using ShootingAcademy.Models.DB.ModelUser;
 
@@ -11,7 +12,7 @@ namespace ShootingAcademy.Models
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)
         {
-
+            
         }
     }
 }

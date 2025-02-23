@@ -11,10 +11,10 @@ namespace ShootingAcademy.Models.DB
 
         public Guid CoatchId { get; set; }
         [ForeignKey(nameof(CoatchId))]
-        public User Coatch { get; set; }
 
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public string OrganizationName { get; set; }
+
+        public User Coatch { get; set; }
 
         public List<GroupMember> Athletes { get; set; }
     }
