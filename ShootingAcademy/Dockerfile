@@ -12,7 +12,7 @@ FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
 ARG BUILD_CONFIGURATION=Release
 WORKDIR /src
 COPY ["ShootingAcademy/ShootingAcademy.csproj", "ShootingAcademy/"]
-RUN dotnet restore "./ShootingAcademy/ShootingAcademy.csproj"
+RUN dotnet restore ".//ShootingAcademy.csproj"
 COPY . .
 WORKDIR "/src/ShootingAcademy"
 RUN dotnet build "./ShootingAcademy.csproj" -c $BUILD_CONFIGURATION -o /app/build
