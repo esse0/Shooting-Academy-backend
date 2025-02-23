@@ -2,5 +2,9 @@
 {
     public class CourseService
     {
+        public Course Get()
+        {
+            return 
+        } 
     }
 }

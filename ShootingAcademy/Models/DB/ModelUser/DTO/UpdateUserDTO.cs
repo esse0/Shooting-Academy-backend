@@ -4,9 +4,12 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
 {
     public class UpdateUserDTO
     {
-
         [Required]
-        public string FullName { get; set; }
+        public string FirstName { get; set; }
+        [Required]
+        public string SecoundName { get; set; }
+        [Required]
+        public string PatronymicName { get; set; }
 
         [Required]
         public int Age { get; set; }
@@ -22,7 +25,9 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
         {
             return new User
             {
-                FullName = updateUserDTO.FullName,
+                FirstName = updateUserDTO.FirstName,
+                SecoundName = updateUserDTO.SecoundName,
+                PatronymicName = updateUserDTO.PatronymicName,
                 Age = updateUserDTO.Age,
                 Grade = updateUserDTO.Grade,
                 Email = updateUserDTO.Email,
