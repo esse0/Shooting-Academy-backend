@@ -13,6 +13,10 @@ namespace ShootingAcademy.Models.DB
 
         public string Description { get; set; }
 
+        public Guid CourseId { get; set; }
+        [ForeignKey(nameof(CourseId))]
+        public Course Course { get; set; }
+
         public List<Lesson> Lessons { get; set; } = [];
     }
 }

@@ -32,7 +32,8 @@ namespace ShootingAcademy.Models.DB.ModelUser
         public Role Role { get; set; }
 
         public List<GroupMember> AthleteGroups { get; set; } = [];
-        public List<Course> Courses { get; set; } = [];
+        public List<Course> InstructoredCourses { get; set; } = [];
+        public List<CourseMember> Courses { get; set; } = [];
 
         public static GetUserDto ToGetUserDto(User user)
         {

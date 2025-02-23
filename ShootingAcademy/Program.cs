@@ -37,8 +37,6 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddTransient<IUserService, UserService>();
-builder.Services.AddTransient<ICourseService, CourseService>();
-
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

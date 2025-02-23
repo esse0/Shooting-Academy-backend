@@ -32,9 +32,4 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
   </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Controllers\Course\" />
-    <Folder Include="Models\Controllers\Course\" />
-  </ItemGroup>
 </Project>

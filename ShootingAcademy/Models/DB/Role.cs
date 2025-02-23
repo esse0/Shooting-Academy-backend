@@ -8,8 +8,7 @@ namespace ShootingAcademy.Models.DB
         [Key]
         public Guid Id { get; set; }
 
-        [Column(TypeName = "varchar(30)")]
         [Required]
-        public required string Name;
+        public string Name { get; set; }
     }
 }

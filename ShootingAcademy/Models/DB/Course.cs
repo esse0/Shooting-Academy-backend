@@ -27,5 +27,9 @@ namespace ShootingAcademy.Models.DB
         public Guid InstructorId { get; set; }
         [ForeignKey(nameof(InstructorId))]
         public User Instructor { get; set; }
+
+        public List<CourseMember> Members { get; set; } = [];
+
+        public List<Module> Modules { get; set; } = [];
     }
 }

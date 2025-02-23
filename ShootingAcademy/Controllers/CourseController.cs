@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using ShootingAcademy.Models.DB.ModelCourse;
+using ShootingAcademy.Models;
 
 namespace ShootingAcademy.Controllers
 {
@@ -9,16 +9,14 @@ namespace ShootingAcademy.Controllers
     [ApiController]
     public class CourseController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
-        private readonly ICourseService _courseService;
+        private readonly ApplicationDbContext dbContext;
 
-        public CourseController(IConfiguration configuration, ICourseService courseService)
+        public CourseController(ApplicationDbContext dbContext)
         {
-            _configuration = configuration;
-            _courseService = courseService;
+            this.dbContext = dbContext;
         }
 
 
-
+        
     }
 }
