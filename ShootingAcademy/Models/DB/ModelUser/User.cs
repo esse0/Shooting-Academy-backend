@@ -32,8 +32,8 @@ namespace ShootingAcademy.Models.DB.ModelUser
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
 
-        public List<GroupMember> AthleteGroups { get; set; } = new();
-        public List<Course> Courses { get; set; } = new();
+        public List<GroupMember> AthleteGroups { get; set; } = [];
+        public List<Course> Courses { get; set; } = [];
       
         public static GetUserDto ToGetUserDto(User user)
         {

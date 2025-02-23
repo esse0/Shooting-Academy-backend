@@ -1,11 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
-using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.Auth;
 using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Models.DB.ModelUser.DTO;
 using System.IdentityModel.Tokens.Jwt;
-using System.Reflection;
 using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;

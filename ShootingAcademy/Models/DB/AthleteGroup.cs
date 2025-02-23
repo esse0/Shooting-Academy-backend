@@ -16,6 +16,6 @@ namespace ShootingAcademy.Models.DB
 
         public User Coatch { get; set; }
 
-        public List<GroupMember> Athletes { get; set; }
+        public List<GroupMember> Athletes { get; set; } = [];
     }
 }

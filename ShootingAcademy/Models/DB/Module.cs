@@ -14,6 +14,6 @@ namespace ShootingAcademy.Models.DB
 
         public string Description { get; set; }
 
-        public List<Lesson> Lessons { get; set; } = new();
+        public List<Lesson> Lessons { get; set; } = [];
     }
 }

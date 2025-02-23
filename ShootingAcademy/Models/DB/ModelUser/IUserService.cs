@@ -9,7 +9,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
         Task UpdateUserAsync(UpdateUserDTO userToUpdate);
         Task DeleteUserAsync(User user);
         Task<User?> FindUserByIdAsync(GetUserDto getUserDto);
-        Task<IEnumerable <GetUserDto>> GetUserAsync();
+        Task<IEnumerable<GetUserDto>> GetUserAsync();
 
     }
 }
