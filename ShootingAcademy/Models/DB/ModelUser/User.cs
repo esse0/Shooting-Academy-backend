@@ -11,11 +11,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
         public Guid Id { get; set;  }
 
         [Required]
-        public string FirstName { get; set; }
-        [Required]
-        public string SecoundName { get; set; }
-        [Required]
-        public string PatronymicName { get; set; }
+        public string FullName { get; set; }
 
         [Required]
         public int Age { get; set; }
