@@ -31,8 +31,8 @@ namespace ShootingAcademy.Controllers
 
             var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, ""),
-            new Claim(ClaimTypes.Role, ""),
+            new Claim(ClaimTypes.Email, user.Email),
+            new Claim(ClaimTypes.Role, user.Role.Name),
         };
 
             var token = new JwtSecurityToken(
@@ -61,7 +61,7 @@ namespace ShootingAcademy.Controllers
                         builder.Append(b.ToString("x2"));
                     }
 
-                    User? user = _userService.AddUserAsync(form);
+                    User? user = _userService.AddUserAsync(form); 
 
                     var token = GenerateAccessToken(user);
 
