@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShootingAcademy.Models.DB
 {
-    public class Features
+    public class Feature
     {
         [Key]
         public Guid Id { get; set; }
