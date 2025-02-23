@@ -6,7 +6,7 @@ namespace ShootingAcademy.Models.DB.ModelRole
     public class Role
     {
         [Key]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [Column(TypeName = "varchar(30)")]
         [Required]

@@ -7,9 +7,9 @@ namespace ShootingAcademy.Models.DB
     public class AthleteGroup
     {
         [Key]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
-        public string CoatchId { get; set; }
+        public Guid CoatchId { get; set; }
         [ForeignKey(nameof(CoatchId))]
         public User Coatch { get; set; }
 

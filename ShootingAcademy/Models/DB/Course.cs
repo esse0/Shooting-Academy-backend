@@ -7,19 +7,25 @@ namespace ShootingAcademy.Models.DB
     public class Course
     {
         [Key]
-        public string Id { get; set; }
+        public Guid Id { get; set; }
 
         [Required]
         public string Title { get; set; }
 
         public string Description { get; set; }
 
-        [Required]
-        public DateTime CreatedAt { get; set; }
-        public DateTime UpdatedAt { get; set; }
+        public DateTime Duration { get; set; }
 
-        public string CreatedById { get; set; }
-        [ForeignKey(nameof(CreatedById))]
-        public User CreatedBy { get; set; }
+        public string Level { get; set; }
+
+        public int Rate { get; set; }
+
+        public int PeopleRateCount { get; set; }
+
+        public bool IsClosed { get; set; }
+
+        public Guid InstructorId { get; set; }
+        [ForeignKey(nameof(InstructorId))]
+        public User Instructor { get; set; }
     }
 }
