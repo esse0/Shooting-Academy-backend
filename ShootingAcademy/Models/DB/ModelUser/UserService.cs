@@ -13,7 +13,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
             _context = context;
         }
 
-        public async Task<User> AddUserAsync(AuthRequest userToCreate)
+        public async Task<User> AddUserAsync(AuthRegisterRequest userToCreate)
         {
             User user = CreateUserDTO.ToUser(userToCreate);
 
@@ -36,9 +36,9 @@ namespace ShootingAcademy.Models.DB.ModelUser
             await _context.SaveChangesAsync();
         }
 
-        public async Task<User?> FindUserByIdAsync(GetUserDto getUserDto)
+        public async Task<User?> FindUserByIdAsync(AuthLoginRequest getUserDto)
         {
-            User? user = await _context.Users.Where(x => x.Email == getUserDto.Email).AsNoTracking().FirstOrDefaultAsync();
+            User? user = await _context.Users.Where(x => x.Email == getUserDto.Email && x.PasswordHash == getUserDto.password).AsNoTracking().FirstOrDefaultAsync();
 
             if (user == null) return null;
             

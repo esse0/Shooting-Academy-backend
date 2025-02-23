@@ -1,9 +1,7 @@
 ﻿namespace ShootingAcademy.Models.Controllers.Auth
 {
-    public class AuthRequest
+    public class AuthLoginRequest
     {
-        public string name;
-        public string lastName;
         public string Email;
         public string password;
     }
