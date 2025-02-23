@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ShootingAcademy.Models.DB
+namespace ShootingAcademy.Models.DB.ModelFraq
 {
     public class Fraq
     {

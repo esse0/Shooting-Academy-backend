@@ -1,7 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using ShootingAcademy.Models.DB.ModelModule;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ShootingAcademy.Models.DB
+namespace ShootingAcademy.Models.DB.ModelLesson
 {
     public class Lesson
     {
