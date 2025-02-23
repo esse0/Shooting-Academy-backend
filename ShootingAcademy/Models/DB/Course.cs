@@ -2,7 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace ShootingAcademy.Models.DB.ModelCourse
+namespace ShootingAcademy.Models.DB
 {
     public class Course
     {

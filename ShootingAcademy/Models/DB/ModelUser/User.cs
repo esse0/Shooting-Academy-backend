@@ -1,5 +1,4 @@
-﻿using ShootingAcademy.Models.DB.ModelCourse;
-using ShootingAcademy.Models.DB.ModelRole;
+﻿using ShootingAcademy.Models.DB.ModelRole;
 using ShootingAcademy.Models.DB.ModelUser.DTO;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

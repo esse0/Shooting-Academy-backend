@@ -1,6 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models.DB;
-using ShootingAcademy.Models.DB.ModelCourse;
 using ShootingAcademy.Models.DB.ModelRole;
 using ShootingAcademy.Models.DB.ModelUser;
 
