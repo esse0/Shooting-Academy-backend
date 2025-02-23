@@ -19,8 +19,6 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
             {
                 Email = updateUserDTO.Email,
                 PasswordHash = updateUserDTO.PasswordHash,
-                SportsCategory = updateUserDTO.SportsCategory,
-                RoleId = updateUserDTO.RoleId,
             };
         }
     }
