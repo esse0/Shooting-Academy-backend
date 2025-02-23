@@ -1,4 +1,5 @@
 ﻿using ShootingAcademy.Models.DB.ModelRole;
+using ShootingAcademy.Models.DB.ModelUser.DTO;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -21,5 +22,16 @@ namespace ShootingAcademy.Models.DB.ModelUser
         public string RoleId { get; set; }
         public Role Role { get; set; }
 
+
+        public static GetUserDto ToGetUserDto(User user)
+        {
+            return new GetUserDto
+            {
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                SportsCategory = user.SportsCategory,
+                RoleId = user.RoleId,
+            };
+        }
     }
 }

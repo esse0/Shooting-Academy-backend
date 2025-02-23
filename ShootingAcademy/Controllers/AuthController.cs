@@ -1,7 +1,9 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 using ShootingAcademy.Models;
+using ShootingAcademy.Models.Controllers.Auth;
 using ShootingAcademy.Models.DB.ModelUser;
+using ShootingAcademy.Models.DB.ModelUser.DTO;
 using System.IdentityModel.Tokens.Jwt;
 using System.Reflection;
 using System.Security.Claims;
@@ -14,14 +16,14 @@ namespace ShootingAcademy.Controllers
     [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private static Dictionary<string, string?> RefreshTokens = new Dictionary<string, string>();
+        private static Dictionary<string, int> RefreshTokens = new Dictionary<string, int>();
         private readonly IConfiguration _configuration;
-        private readonly ApplicationDbContext _context;
+        private readonly IUserService _userService;
 
-        public AuthController(IConfiguration configuration, ApplicationDbContext context)
+        public AuthController(IConfiguration configuration, IUserService userService)
         {
             _configuration = configuration;
-            _context = context;
+            _userService = userService;
         }
 
         private JwtSecurityToken GenerateAccessToken(User user)
@@ -29,8 +31,8 @@ namespace ShootingAcademy.Controllers
 
             var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.Email, user.id),
-            new Claim(ClaimTypes.Role, _roleTrackerService.GetEntrieById(user.roleId).ROLE),
+            new Claim(ClaimTypes.Email, ""),
+            new Claim(ClaimTypes.Role, ""),
         };
 
             var token = new JwtSecurityToken(
@@ -46,39 +48,32 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] LoginForm form)
+        public async Task<IActionResult> Register([FromBody] CreateUserDTO form)
         {
             try
             {
                 using (MD5 md5Hash = MD5.Create())
                 {
-                    byte[] bytes = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(form.Password));
+                    byte[] bytes = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(form.PasswordHash));
                     StringBuilder builder = new StringBuilder();
                     foreach (byte b in bytes)
                     {
                         builder.Append(b.ToString("x2"));
                     }
 
-                    User.Model user = new User.Model
-                    {
-                        id = form.Email,
-                        password = builder.ToString(),
-                        roleId = _roleTrackerService.GetEntrieByName("user").ID,
-                    };
-
-                    _userTrackerService.CreateEntry(user);
+                    User? user = _userService.AddUserAsync(form);
 
                     var token = GenerateAccessToken(user);
 
                     var refreshToken = Guid.NewGuid().ToString();
 
-                    RefreshTokens[refreshToken] = user.id;
+                    RefreshTokens[refreshToken] = user.Id;
 
                     return Ok(new AuthResponse
                     {
                         accessToken = new JwtSecurityTokenHandler().WriteToken(token),
                         refreshToken = refreshToken,
-                        role = "user",
+                        role = user.Role.Name,
                     });
                 }
             }
@@ -92,11 +87,11 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginForm form)
+        public async Task<IActionResult> Login([FromBody] GetUserDto form)
         {
             try
             {
-                User.Model user = _userTrackerService.GetEntrie(form);
+                User? user = _userService.FindUserByIdAsync(form);
 
                 if (user != null)
                 {
@@ -104,13 +99,13 @@ namespace ShootingAcademy.Controllers
 
                     var refreshToken = Guid.NewGuid().ToString();
 
-                    RefreshTokens[refreshToken] = user.id;
+                    RefreshTokens[refreshToken] = user.Id;
 
                     return Ok(new AuthResponse
                     {
                         accessToken = new JwtSecurityTokenHandler().WriteToken(token),
                         refreshToken = refreshToken,
-                        role = _roleTrackerService.GetEntrieById(user.roleId).ROLE,
+                        role = user.Role.Name,
                     });
 
                 }
