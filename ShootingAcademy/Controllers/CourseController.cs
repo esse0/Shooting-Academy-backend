@@ -17,5 +17,8 @@ namespace ShootingAcademy.Controllers
             _configuration = configuration;
             _courseService = courseService;
         }
+
+
+
     }
 }
