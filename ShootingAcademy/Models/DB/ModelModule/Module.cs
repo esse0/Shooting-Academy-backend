@@ -1,4 +1,5 @@
-﻿using ShootingAcademy.Models.DB.ModelUser;
+﻿using ShootingAcademy.Models.DB.ModelLesson;
+using ShootingAcademy.Models.DB.ModelUser;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
