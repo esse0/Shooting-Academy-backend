@@ -2,6 +2,6 @@
 {
     public abstract class DbServiceBase<T>
     {
-        public abstract 
+        //public abstract 
     }
 }
