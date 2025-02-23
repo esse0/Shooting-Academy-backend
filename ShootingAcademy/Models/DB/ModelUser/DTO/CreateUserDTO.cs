@@ -35,6 +35,7 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
                 Grade = createUserDTO.Grade,
                 Email = createUserDTO.Email,
                 PasswordHash = createUserDTO.PasswordHash,
+                SportsCategory = createUserDTO.SportsCategory,
                 RoleId = createUserDTO.RoleId,
             };
         }
