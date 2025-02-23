@@ -1,4 +1,4 @@
-﻿using ShootingAcademy.Models.DB.ModelCourse.DTO;
+﻿using ShootingAcademy.Models.DB.ModelCourse;
 using ShootingAcademy.Models.DB.ModelCourse;
 
 namespace ShootingAcademy.Models.DB.ModelCourse
