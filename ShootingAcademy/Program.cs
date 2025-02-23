@@ -4,7 +4,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.DB;
-using ShootingAcademy.Models.DB.ModelCourse;
 using ShootingAcademy.Models.DB.ModelUser;
 using System.Text;
 
@@ -37,6 +36,7 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
 
 builder.Services.AddTransient<IUserService, UserService>();
+
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

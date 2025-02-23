@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using ShootingAcademy.Models.Controllers.Auth;
 using ShootingAcademy.Models.DB.ModelUser.DTO;
 
 namespace ShootingAcademy.Models.DB.ModelUser
@@ -12,7 +13,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
             _context = context;
         }
 
-        public async Task<User> AddUserAsync(CreateUserDTO userToCreate)
+        public async Task<User> AddUserAsync(AuthRequest userToCreate)
         {
             User user = CreateUserDTO.ToUser(userToCreate);
 

@@ -15,9 +15,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\DB\ModelRole\DTO\**" />
     <Compile Remove="wwwroot\**" />
+    <Content Remove="Models\DB\ModelRole\DTO\**" />
     <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Models\DB\ModelRole\DTO\**" />
     <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Models\DB\ModelRole\DTO\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
 

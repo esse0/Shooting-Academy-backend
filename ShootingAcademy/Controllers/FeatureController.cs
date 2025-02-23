@@ -1,42 +1,38 @@
-﻿using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
-using ShootingAcademy.Models.Controllers.Course;
+using ShootingAcademy.Models.Controllers.Features;
 using ShootingAcademy.Models.DB;
 
 namespace ShootingAcademy.Controllers
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class CourseController : ControllerBase
+    public class FeatureController : ControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
 
-        public CourseController(IConfiguration configuration, ApplicationDbContext context)
+        public FeatureController(IConfiguration configuration, ApplicationDbContext context)
         {
             _configuration = configuration;
             _context = context;
         }
 
         [HttpGet]
-        public async Task<IActionResult>  Get([FromQuery]  form)
+        public async Task<IActionResult> Get([FromQuery] form)
         {
             try
             {
-                IEnumerable<Course> Users = await _context.Courses.AsNoTracking().ToListAsync();
+                IEnumerable<Feature> Users = await _context.Features.AsNoTracking().ToListAsync();
 
-                return Ok(new CourseResponse()
+                return Ok(new FeatureResponse()
                 {
-                    
+
                 });
 
             }
             catch (Exception error)
             {
-                return BadRequest(new CourseResponse()
+                return BadRequest(new FeatureResponse()
                 {
                     error = error.Message,
                 });
@@ -45,18 +41,18 @@ namespace ShootingAcademy.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]  form)
+        public async Task<IActionResult> Post([FromBody] form)
         {
             try
             {
 
-                _context.Courses.Add();
+                _context.Features.Add();
 
-                return Ok(new CourseResponse());
+                return Ok(new FeatureResponse());
             }
             catch (Exception error)
             {
-                return BadRequest(new CourseResponse()
+                return BadRequest(new FeatureResponse()
                 {
                     error = error.Message,
                 });
@@ -64,42 +60,41 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody]  form)
+        public async Task<IActionResult> Put([FromBody] form)
         {
             try
             {
 
-                _context.Courses.Update();
+                _context.Features.Update();
 
-                return Ok(new CourseResponse());
+                return Ok(new FeatureResponse());
             }
             catch (Exception error)
             {
-                return BadRequest(new CourseResponse()
+                return BadRequest(new FeatureResponse()
                 {
                     error = error.Message,
                 });
             }
         }
+
         [HttpDelete]
-        public async Task<IActionResult> Delete( id)
+        public async Task<IActionResult> Delete(id)
         {
             try
             {
-                _context.Courses.Remove();
+                _context.Features.Remove();
 
-                return Ok(new CourseResponse());
+                return Ok(new FeatureResponse());
 
             }
             catch (Exception error)
             {
-                return BadRequest(new CourseResponse()
+                return BadRequest(new FeatureResponse()
                 {
                     error = error.Message,
                 });
             }
         }
-
-
     }
 }
