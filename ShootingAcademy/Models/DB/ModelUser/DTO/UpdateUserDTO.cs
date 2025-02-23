@@ -6,19 +6,34 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
     {
 
         [Required]
+        public string FirstName { get; set; }
+        [Required]
+        public string SecoundName { get; set; }
+        [Required]
+        public string PatronymicName { get; set; }
+
+        [Required]
+        public int Age { get; set; }
+        public string Grade { get; set; }
+        public string Country { get; set; }
+        [Required]
         public required string Email { get; set; }
         [Required]
         public required string PasswordHash { get; set; }
-        [Required]
-        public required string SportsCategory { get; set; }
-        public string RoleId { get; set; }
+        public Guid RoleId { get; set; }
 
         public static User ToUser(UpdateUserDTO updateUserDTO)
         {
             return new User
             {
+                FirstName = updateUserDTO.FirstName,
+                SecoundName = updateUserDTO.SecoundName,
+                PatronymicName = updateUserDTO.PatronymicName,
+                Age = updateUserDTO.Age,
+                Grade = updateUserDTO.Grade,
                 Email = updateUserDTO.Email,
                 PasswordHash = updateUserDTO.PasswordHash,
+                RoleId = updateUserDTO.RoleId,
             };
         }
     }
