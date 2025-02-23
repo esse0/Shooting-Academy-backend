@@ -1,4 +1,5 @@
 ﻿using ShootingAcademy.Models.DB.ModelRole;
+using ShootingAcademy.Models.DB.ModelUser.DTO;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -22,10 +23,19 @@ namespace ShootingAcademy.Models.DB.ModelUser
         [ForeignKey(nameof(RoleId))]
         public Role Role { get; set; }
 
-
-
         public List<GroupMember> AthleteGroups { get; set; } = new();
         public List<Statistic> Statistics { get; set; } = new();
         public List<Course> Courses { get; set; } = new();
+      
+        public static GetUserDto ToGetUserDto(User user)
+        {
+            return new GetUserDto
+            {
+                Email = user.Email,
+                PasswordHash = user.PasswordHash,
+                SportsCategory = user.SportsCategory,
+                RoleId = user.RoleId,
+            };
+        }
     }
 }
