@@ -3,14 +3,14 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShootingAcademy.Models.DB
 {
-    public class Fraq
+    public class Features
     {
         [Key]
         public Guid Id { get; set; }
 
-        public string Question { get; set; }
+        public string Title { get; set; }
 
-        public string Answer { get; set; }
+        public string Description { get; set; }
 
         public Guid CourseId { get; set; }
         [ForeignKey(nameof(CourseId))]
