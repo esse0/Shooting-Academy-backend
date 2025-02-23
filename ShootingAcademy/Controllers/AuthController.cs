@@ -111,7 +111,7 @@ namespace ShootingAcademy.Controllers
                 }
                 return Unauthorized(new AuthResponse
                 {
-                    error = "Неверные данные",
+                    error = "ГЌГҐГўГҐГ°Г­Г»ГҐ Г¤Г Г­Г­Г»ГҐ",
                 });
             }
             catch (Exception ex)
