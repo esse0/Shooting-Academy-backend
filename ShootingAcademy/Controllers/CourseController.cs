@@ -22,7 +22,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult>  Get([FromQuery]  form)
+        public async Task<IActionResult>  Get([FromQuery] object form)
         {
             try
             {
@@ -45,12 +45,12 @@ namespace ShootingAcademy.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody]  form)
+        public async Task<IActionResult> Post([FromBody] object form)
         {
             try
             {
 
-                _context.Courses.Add();
+                //_context.Courses.Add();
 
                 return Ok(new CourseResponse());
             }
@@ -64,12 +64,12 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody]  form)
+        public async Task<IActionResult> Put([FromBody] object form)
         {
             try
             {
 
-                _context.Courses.Update();
+                //_context.Courses.Update();
 
                 return Ok(new CourseResponse());
             }
@@ -82,11 +82,11 @@ namespace ShootingAcademy.Controllers
             }
         }
         [HttpDelete]
-        public async Task<IActionResult> Delete( id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
-                _context.Courses.Remove();
+                _context.Courses.Remove(await _context.Courses.FirstAsync(i => i.Id == id));
 
                 return Ok(new CourseResponse());
 

@@ -18,7 +18,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] form)
+        public async Task<IActionResult> Get([FromQuery] object form)
         {
             try
             {
@@ -41,12 +41,12 @@ namespace ShootingAcademy.Controllers
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] form)
+        public async Task<IActionResult> Post([FromBody] object form)
         {
             try
             {
 
-                _context.Features.Add();
+                //_context.Features.Add();
 
                 return Ok(new FeatureResponse());
             }
@@ -60,12 +60,12 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] form)
+        public async Task<IActionResult> Put([FromBody] object form)
         {
             try
             {
 
-                _context.Features.Update();
+                //_context.Features.Update();
 
                 return Ok(new FeatureResponse());
             }
@@ -79,11 +79,11 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpDelete]
-        public async Task<IActionResult> Delete(id)
+        public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
-                _context.Features.Remove();
+                //_context.Features.Remove();
 
                 return Ok(new FeatureResponse());
 
