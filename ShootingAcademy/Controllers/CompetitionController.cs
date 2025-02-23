@@ -60,7 +60,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] form)
+        public async Task<IActionResult> Put([FromBody] object form)
         {
             try
             {

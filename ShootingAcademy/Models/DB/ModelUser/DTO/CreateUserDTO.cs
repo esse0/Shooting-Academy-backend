@@ -27,11 +27,11 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
             {
                 FirstName = createUserDTO.name,
                 SecoundName = createUserDTO.lastName,
-                Age = null,
-                Grade = null,
+                Age = 0,
+                Grade = "",
                 Email = createUserDTO.Email,
                 PasswordHash = createUserDTO.password,
-                RoleId = Guid.NewGuid(),
+                Role = "",
             };
         }
     }

@@ -1,141 +1,117 @@
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using ShootingAcademy.Models.Controllers.Auth;
-using ShootingAcademy.Models.DB.ModelUser;
-using ShootingAcademy.Models.DB.ModelUser.DTO;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using ShootingAcademy.Models;
+using ShootingAcademy.Models.Errors;
+using ShootingAcademy.Services;
 
 namespace ShootingAcademy.Controllers
 {
+    [Route("api/[controller]")]
     [ApiController]
-    [Route("[controller]")]
     public class AuthController : ControllerBase
     {
-        private static Dictionary<string, string> RefreshTokens = new Dictionary<string, string>();
-        private readonly IConfiguration _configuration;
-        private readonly IUserService _userService;
+        private readonly JwtManager _jwtManager;
+        private readonly PasswordHasher _passwordHasher;
+        private readonly ApplicationDbContext _db;
 
-        public AuthController(IConfiguration configuration, IUserService userService)
+        public AuthController(JwtManager jwtManager, PasswordHasher passwordHasher, ApplicationDbContext db)
         {
-            _configuration = configuration;
-            _userService = userService;
+            _jwtManager = jwtManager;
+            _passwordHasher = passwordHasher;
+            _db = db;
         }
 
-        private JwtSecurityToken GenerateAccessToken(User user)
+        [HttpPost("signin")]
+        public async Task<IResult> signinJwt([FromBody] SigninModel model)
         {
-
-            var claims = new List<Claim>
+            try
             {
-            new Claim(ClaimTypes.Email, user.Email),
-            new Claim(ClaimTypes.Role, user.Role),
-            };
+                var user = await _db.Users.FirstAsync(i => i.Email == model.email);
 
-            var token = new JwtSecurityToken(
-                issuer: _configuration["JwtSettings:Issuer"],
-                audience: _configuration["JwtSettings:Audience"],
-                claims: claims,
-                expires: DateTime.UtcNow.AddMinutes(20),
-                signingCredentials: new SigningCredentials(new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSettings:SecretKey"])),
-                    SecurityAlgorithms.HmacSha256)
-            );
+                if (!_passwordHasher.Verify(model.password, user.PasswordHash))
+                {
+                    throw new ApplicationException("Пароли не совпадают");
+                }
 
-            return token;
+                HttpContext.Response.Cookies.Append(
+                    "AccessToken",
+                    JwtManager.GenerateJwtToken(_jwtManager.AccessToken, user),
+                    _jwtManager.JwtCookieOptions
+                );
+
+                string token = JwtManager.GenerateJwtToken(_jwtManager.RefreshToken, user);
+
+                HttpContext.Response.Cookies.Append(
+                    "RefreshToken",
+                    token,
+                    _jwtManager.JwtCookieOptions
+                );
+
+                //user.Token = token;
+
+                _db.Users.Update(user);
+
+                await _db.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (ApplicationException apperr)
+            {
+                return Results.Json(new BaseError()
+                {
+                    Show = true,
+                    Code = "400",
+                    Error = true,
+                    Message = apperr.Message
+                }, statusCode: 400);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
+
+        [HttpGet("signout")]
+        public IResult logoutJwt()
+        {
+            HttpContext.Response.Cookies.Delete("AccessToken");
+            HttpContext.Response.Cookies.Delete("RefreshToken");
+
+            return Results.Ok();
         }
 
         [HttpPost("register")]
-        public async Task<IActionResult> Register([FromBody] AuthRequest form)
+        public async Task<IResult> Register([FromForm] RegisterModel model)
         {
             try
             {
-                using (MD5 md5Hash = MD5.Create())
+                var usr = await _db.Users.AddAsync(new()
                 {
-                    byte[] bytes = md5Hash.ComputeHash(Encoding.UTF8.GetBytes(form.password));
-                    StringBuilder builder = new StringBuilder();
-                    foreach (byte b in bytes)
-                    {
-                        builder.Append(b.ToString("x2"));
-                    }
-
-                    User? user = await _userService.AddUserAsync(form); 
-
-                    var token = GenerateAccessToken(user);
-
-                    var refreshToken = Guid.NewGuid().ToString();
-
-                    RefreshTokens[refreshToken] = user.Id.ToString();
-
-                    return Ok(new AuthResponse
-                    {
-                        accessToken = new JwtSecurityTokenHandler().WriteToken(token),
-                        refreshToken = refreshToken,
-                        role = user.Role,
-                    });
-                }
-            }
-            catch (Exception ex)
-            {
-                return BadRequest(new AuthResponse
-                {
-                    error = ex.Message,
+                    FirstName = model.name,
+                    SecoundName = model.lastName,
+                    PatronymicName = string.Empty,
+                    Email = model.email,
+                    PasswordHash = _passwordHasher.Hash(model.password),
+                    Role = "Athlete",
+                    Grade = "",
+                    Age = 0,
+                    Country = ""
                 });
-            }
-        }
 
-        [HttpPost("login")]
-        public async Task<IActionResult> Login([FromBody] GetUserDto form)
-        {
-            try
+                await _db.SaveChangesAsync();
+            }
+            catch
             {
-                User? user = await _userService.FindUserByIdAsync(form);
-
-                if (user != null)
+                return Results.Json(new BaseError()
                 {
-                    var token = GenerateAccessToken(user);
-
-                    var refreshToken = Guid.NewGuid().ToString();
-
-                    RefreshTokens[refreshToken] = user.Id.ToString();
-
-                    return Ok(new AuthResponse
-                    {
-                        accessToken = new JwtSecurityTokenHandler().WriteToken(token),
-                        refreshToken = refreshToken,
-                        role = user.Role,
-                    });
-
-                }
-                return Unauthorized(new AuthResponse
-                {
-                    error = "Íåâåðíûå äàííûå",
-                });
+                    Show = true,
+                    Code = "400",
+                    Error = true,
+                    Message = "Some error!"
+                }, statusCode: 400);
             }
-            catch (Exception ex)
-            {
-                return BadRequest(new AuthResponse
-                {
-                    error = ex.Message,
-                });
-            }
+
+            return Results.Ok();
         }
-
-        /*
-        [HttpPost("refresh")]
-        public IActionResult Refresh([FromBody] RefreshRequest request)
-        {
-            if (RefreshTokens.TryGetValue(request.RefreshToken, out var userId))
-            {
-                // Generate a new access token
-                var token = GenerateAccessToken(userId);
-
-                // Return the new access token to the client
-                return Ok(new { AccessToken = new JwtSecurityTokenHandler().WriteToken(token) });
-            }
-
-            return BadRequest("Invalid refresh token");
-        }
-        */
     }
 }

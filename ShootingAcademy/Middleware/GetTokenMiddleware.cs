@@ -36,15 +36,15 @@ namespace ShootingAcademy.Middleware
 
             Guid userId = Guid.Parse(claims[0].Value);
 
-            using (var scope = _serviceScopeFactory.CreateScope())
-            {
-                var dbContect = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+            //using (var scope = _serviceScopeFactory.CreateScope())
+            //{
+            //    var dbContect = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                var user = dbContect.Users.First(u => u.Id == userId);
+            //    var user = dbContect.Users.First(u => u.Id == userId);
 
-                //if (user.Token != refresh)
-                //    return _next(httpContext);
-            }
+            //    if (user.Token != refresh)
+            //        return _next(httpContext);
+            //}
 
             ClaimsPrincipal? accessJwtClaims = JwtManager.ValidateToken(access, JwtManager.GetParameters(_jwtManager.AccessToken));
 

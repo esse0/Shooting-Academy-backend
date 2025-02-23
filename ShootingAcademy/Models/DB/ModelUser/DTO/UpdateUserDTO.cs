@@ -32,7 +32,7 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
                 Grade = updateUserDTO.Grade,
                 Email = updateUserDTO.Email,
                 PasswordHash = updateUserDTO.PasswordHash,
-                RoleId = updateUserDTO.RoleId,
+                Role = updateUserDTO.RoleId.ToString(),
             };
         }
     }

@@ -34,7 +34,7 @@ namespace ShootingAcademy.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Typ, user.Role.Name),
+                new Claim(JwtRegisteredClaimNames.Typ, user.Role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 

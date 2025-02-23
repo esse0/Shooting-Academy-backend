@@ -44,7 +44,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
                 Grade = user.Grade,
                 Email = user.Email,
                 PasswordHash = user.PasswordHash,
-                RoleId = user.RoleId,
+                //RoleId = user.RoleId,
             };
         }
     }

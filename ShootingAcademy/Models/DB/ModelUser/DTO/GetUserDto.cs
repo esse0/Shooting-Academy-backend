@@ -33,7 +33,7 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
                 Grade = getUserDto.Grade,
                 Email = getUserDto.Email,
                 PasswordHash = getUserDto.PasswordHash,
-                RoleId = getUserDto.RoleId,
+                Role = getUserDto.RoleId.ToString(),
             };
         }
     }
