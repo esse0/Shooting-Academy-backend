@@ -1,5 +1,4 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using ShootingAcademy.Models.Controllers.Auth;
 using ShootingAcademy.Models.DB.ModelUser.DTO;
 
 namespace ShootingAcademy.Models.DB.ModelUser
@@ -17,7 +16,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
         {
             User user = CreateUserDTO.ToUser(userToCreate);
 
-            _context.users.Add(user);
+            _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
             return user;
@@ -26,19 +25,19 @@ namespace ShootingAcademy.Models.DB.ModelUser
         {
             User user = UpdateUserDTO.ToUser(userToUpdate);
 
-            _context.users.Update(user);
+            _context.Users.Update(user);
             await _context.SaveChangesAsync();
         }
 
         public async Task DeleteUserAsync(User user)
         {
-            _context.users.Remove(user);
+            _context.Users.Remove(user);
             await _context.SaveChangesAsync();
         }
 
         public async Task<User?> FindUserByIdAsync(GetUserDto getUserDto)
         {
-            User? user = await _context.users.Where(x => x.Email == getUserDto.Email).AsNoTracking().FirstOrDefaultAsync();
+            User? user = await _context.Users.Where(x => x.Email == getUserDto.Email).AsNoTracking().FirstOrDefaultAsync();
 
             if (user == null) return null;
             
@@ -47,9 +46,9 @@ namespace ShootingAcademy.Models.DB.ModelUser
 
         public async Task<IEnumerable<GetUserDto>> GetUserAsync()
         {
-            IEnumerable<User> users = await _context.users.AsNoTracking().ToListAsync();
+            IEnumerable<User> Users = await _context.Users.AsNoTracking().ToListAsync();
 
-            return users.Select(User.ToGetUserDto);
+            return Users.Select(User.ToGetUserDto);
         }
 
     }
