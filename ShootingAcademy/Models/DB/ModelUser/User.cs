@@ -1,6 +1,4 @@
-﻿using ShootingAcademy.Models.DB.ModelCourse;
-using ShootingAcademy.Models.DB.ModelRole;
-using ShootingAcademy.Models.DB.ModelUser.DTO;
+﻿using ShootingAcademy.Models.DB.ModelUser.DTO;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -9,7 +7,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
     public class User
     {
         [Key]
-        public Guid Id { get; set;  }
+        public Guid Id { get; set; }
 
         [Required]
         public string FirstName { get; set; }
@@ -35,7 +33,7 @@ namespace ShootingAcademy.Models.DB.ModelUser
 
         public List<GroupMember> AthleteGroups { get; set; } = [];
         public List<Course> Courses { get; set; } = [];
-      
+
         public static GetUserDto ToGetUserDto(User user)
         {
             return new GetUserDto

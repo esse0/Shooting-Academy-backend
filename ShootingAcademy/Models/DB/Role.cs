@@ -1,7 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
-namespace ShootingAcademy.Models.DB.ModelRole
+namespace ShootingAcademy.Models.DB
 {
     public class Role
     {

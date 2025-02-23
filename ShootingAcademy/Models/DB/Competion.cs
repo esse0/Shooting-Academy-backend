@@ -1,8 +1,8 @@
-﻿using ShootingAcademy.Models.DB.ModelUser;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ShootingAcademy.Models.DB.ModelUser;
 
-namespace ShootingAcademy.Models.DB.ModelCompetition
+namespace ShootingAcademy.Models.DB
 {
     public class Competion
     {
@@ -15,7 +15,7 @@ namespace ShootingAcademy.Models.DB.ModelCompetition
 
         public DateTime DateTime { get; set; }
 
-        public string MaxMembersCount { get; set; } 
+        public string MaxMembersCount { get; set; }
 
         public string Venue { get; set; }
         public string Country { get; set; }

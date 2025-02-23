@@ -1,11 +1,14 @@
-﻿using ShootingAcademy.Models.DB.ModelRole;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.ComponentModel.DataAnnotations;
+using ShootingAcademy.Models.DB.ModelUser;
 
-namespace ShootingAcademy.Models.DB.ModelCourse.DTO
+namespace ShootingAcademy.Models.DB
 {
-    public class CreateCourseDTO
+    public class Course
     {
+        [Key]
+        public Guid Id { get; set; }
+
         [Required]
         public string Title { get; set; }
 
@@ -22,7 +25,7 @@ namespace ShootingAcademy.Models.DB.ModelCourse.DTO
         public bool IsClosed { get; set; }
 
         public Guid InstructorId { get; set; }
-
-
+        [ForeignKey(nameof(InstructorId))]
+        public User Instructor { get; set; }
     }
 }

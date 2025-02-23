@@ -1,6 +1,6 @@
-﻿using ShootingAcademy.Models.DB.ModelUser;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using ShootingAcademy.Models.DB.ModelUser;
 
 namespace ShootingAcademy.Models.DB
 {
