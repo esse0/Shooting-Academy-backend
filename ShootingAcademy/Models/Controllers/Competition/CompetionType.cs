@@ -1,6 +1,6 @@
 ﻿namespace ShootingAcademy.Models.Controllers.Competition
 {
-    public class CompetionTypes
+    public class CompetionType
     {
         public string id {  get; set; }
         public string title { get; set; }

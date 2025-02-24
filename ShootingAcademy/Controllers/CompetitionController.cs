@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authorization;
 using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Services;
 using ShootingAcademy.Models.Controllers.Competition;
+using ShootingAcademy.Models.Controllers.Course;
 
 namespace ShootingAcademy.Controllers
 {
@@ -21,6 +22,34 @@ namespace ShootingAcademy.Controllers
             _context = context;
         }
 
+        [HttpGet]
+        public async Task<IResult> Get()
+        {
+            IEnumerable<Competion> Competions = await _context.Competions
+                                                            .Where(i => i.Status != Competion.ActiveStatus.Ended)
+                                                            .ToListAsync();
+
+            return Results.Json(Competions.Select(competion =>
+            {
+                return new CompetionType
+                {
+                    status = Enum.GetName(competion.Status),
+                    city = competion.City,
+                    country = competion.Country,
+                    maxMebmerCount = competion.MaxMembersCount,
+                    memberCount = competion.Members.Count,
+                    date = competion.DateTime.ToShortDateString(),
+                    time = competion.DateTime.ToShortTimeString(),
+                    description = competion.Description,
+                    exercise = competion.Exercise,
+                    id = competion.Id.ToString(),
+                    organiser = $"{competion.Organization.FirstName} {competion.Organization.SecoundName}",
+                    title = competion.Title,
+                    venue = competion.Venue,
+                };
+            }));
+        }
+
         [HttpGet("user"), Authorize]
         public async Task<IResult> GetUserCompetions([FromQuery] bool history = false)
         {
@@ -32,7 +61,7 @@ namespace ShootingAcademy.Controllers
                     .Include(i => i.Competions)
                     .FirstAsync(i => i.Id == userGuid);
 
-                List<CompetionTypes> competionTypes = [];
+                List<CompetionType> competionTypes = [];
 
                 foreach (var competionTicket in user.Competions)
                 {
@@ -44,7 +73,7 @@ namespace ShootingAcademy.Controllers
                     if (!history && competion.Status == Competion.ActiveStatus.Ended)
                         continue;
 
-                    competionTypes.Add(new CompetionTypes()
+                    competionTypes.Add(new CompetionType()
                     {
                         status = Enum.GetName(competion.Status),
                         city = competion.City,
