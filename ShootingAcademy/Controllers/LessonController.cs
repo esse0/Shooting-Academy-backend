@@ -22,7 +22,7 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                IEnumerable<Feature> Users = await _context.Features.AsNoTracking().ToListAsync();
+                IEnumerable<Lesson> Lessons = await _context.Lessons.AsNoTracking().ToListAsync();
 
                 return Ok(new FeatureResponse()
                 {

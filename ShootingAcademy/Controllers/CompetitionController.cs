@@ -22,7 +22,7 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                IEnumerable<Competion> Users = await _context.Competions.AsNoTracking().ToListAsync();
+                IEnumerable<Competion> Competions = await _context.Competions.AsNoTracking().ToListAsync();
 
                 return Ok(new CompetitionResponse()
                 {

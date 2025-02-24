@@ -1,19 +1,17 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
-using ShootingAcademy.Models;
-using ShootingAcademy.Models.Controllers.Course;
+using ShootingAcademy.Models.Controllers.Features;
 using ShootingAcademy.Models.DB;
+using ShootingAcademy.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace ShootingAcademy.Controllers
 {
-    [Route("[controller]")]
-    [ApiController]
-    public class CourseController : ControllerBase
+    public class GroupMemberController : ControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
 
-        public CourseController(IConfiguration configuration, ApplicationDbContext context)
+        public GroupMemberController(IConfiguration configuration, ApplicationDbContext context)
         {
             _configuration = configuration;
             _context = context;
@@ -24,16 +22,17 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                IEnumerable<Course> Courses = await _context.Courses.AsNoTracking().ToListAsync();
+                IEnumerable<GroupMember> GroupMembers = await _context.GroupMembers.AsNoTracking().ToListAsync();
 
-                return Ok(new CourseResponse()
+                return Ok(new FeatureResponse()
                 {
-                    
+
                 });
+
             }
             catch (Exception error)
             {
-                return BadRequest(new CourseResponse()
+                return BadRequest(new FeatureResponse()
                 {
                     error = error.Message,
                 });
@@ -47,13 +46,13 @@ namespace ShootingAcademy.Controllers
             try
             {
 
-                //_context.Courses.Add();
+                //_context.GroupMembers.Add();
 
-                return Ok(new CourseResponse());
+                return Ok(new FeatureResponse());
             }
             catch (Exception error)
             {
-                return BadRequest(new CourseResponse()
+                return BadRequest(new FeatureResponse()
                 {
                     error = error.Message,
                 });
@@ -66,37 +65,36 @@ namespace ShootingAcademy.Controllers
             try
             {
 
-                //_context.Courses.Update();
+                //_context.GroupMembers.Update();
 
-                return Ok(new CourseResponse());
+                return Ok(new FeatureResponse());
             }
             catch (Exception error)
             {
-                return BadRequest(new CourseResponse()
+                return BadRequest(new FeatureResponse()
                 {
                     error = error.Message,
                 });
             }
         }
+
         [HttpDelete]
         public async Task<IActionResult> Delete(Guid id)
         {
             try
             {
-                //_context.Courses.Remove(await _context.Courses.FirstAsync(i => i.Id == id));
+                //_context.GroupMembers.Remove();
 
-                return Ok(new CourseResponse());
+                return Ok(new FeatureResponse());
 
             }
             catch (Exception error)
             {
-                return BadRequest(new CourseResponse()
+                return BadRequest(new FeatureResponse()
                 {
                     error = error.Message,
                 });
             }
         }
-
-
     }
 }
