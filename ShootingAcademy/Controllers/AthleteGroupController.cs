@@ -4,106 +4,61 @@ using ShootingAcademy.Models.DB;
 using ShootingAcademy.Models;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models.Exceptions;
+using Microsoft.AspNetCore.Authorization;
+using ShootingAcademy.Services;
+using ShootingAcademy.Models.DB.ModelUser;
+using ShootingAcademy.Models.Controllers.AthleteGroup;
 
 namespace ShootingAcademy.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
     public class AthleteGroupController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
 
-        public AthleteGroupController(IConfiguration configuration, ApplicationDbContext context)
+        public AthleteGroupController(ApplicationDbContext context)
         {
-            _configuration = configuration;
             _context = context;
         }
 
-        [HttpGet]
-        public async Task<IResult> Get([FromQuery] object form)
+        [HttpGet("user"), Authorize]
+        public async Task<IResult> GetUserGroups()
         {
             try
             {
-                IEnumerable<AthleteGroup> AthleteGroups = await _context.AthleteGroups.AsNoTracking().ToListAsync();
+                Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
-                return Results.Ok(new FeatureResponse()
+                User user = await _context.Users
+                                .Include(usr => usr.AthleteGroups)
+                                .FirstAsync(usr => usr.Id == userGuid);
+
+                var userGroups = await _context.AthleteGroups
+                                         .Where(group => user.AthleteGroups.Any(gm => gm.AthleteGroupId == group.Id))
+                                         .Include(group => group.Coatch)
+                                         .Include(group => group.Athletes)
+                                         .ToArrayAsync();
+
+                return Results.Json(userGroups.Select(group =>
                 {
+                    var users = _context.Users
+                                .Where(usr => group.Athletes.Any(ath => ath.Id == usr.Id))
+                                .ToArray();
 
-                });
-
+                    return new AthleteGroupModel()
+                    {
+                        OrganizationName = group.OrganizationName,
+                        id = group.Id.ToString(),
+                        coach = FullUserModel.FromEntity(group.Coatch),
+                        members = users.Select(user => FullUserModel.FromEntity(user)).ToList(),
+                    };
+                }));
             }
             catch (BaseException apperr)
             {
                 return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
-
-        [HttpPost]
-        public async Task<IResult> Post([FromBody] object form)
-        {
-            try
-            {
-
-                //_context.AthleteGroups.Add();
-
-                return Results.Ok(new FeatureResponse());
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
-        [HttpPut]
-        public async Task<IResult> Put([FromBody] object form)
-        {
-            try
-            {
-
-                //_context.AthleteGroups.Update();
-
-                return Results.Ok(new FeatureResponse());
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
-        [HttpDelete]
-        public async Task<IResult> Delete(Guid id)
-        {
-            try
-            {
-                //_context.AthleteGroups.Remove();
-
-                return Results.Ok(new FeatureResponse());
-
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
             }
         }
     }
 }
+

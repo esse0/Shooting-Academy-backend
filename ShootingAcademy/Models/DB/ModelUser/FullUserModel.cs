@@ -21,5 +21,23 @@ namespace ShootingAcademy.Models.DB.ModelUser
         public string Email { get; set; }
 
         public string Role { get; set; }
+
+        public static FullUserModel FromEntity(User user)
+        {
+            return new FullUserModel
+            {
+                Id = user.Id,
+                FirstName = user.FirstName,
+                SecoundName = user.SecoundName,
+                Address = user.Address,
+                Age = user.Age,
+                Grade = user.Grade,
+                City = user.City,
+                Country = user.Country,
+                Email = user.Email,
+                PatronymicName = user.PatronymicName,
+                Role = user.Role
+            };
+        }
     }
 }
