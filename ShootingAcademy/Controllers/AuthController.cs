@@ -105,7 +105,10 @@ namespace ShootingAcademy.Controllers
                     Role = "Athlete",
                     Grade = "",
                     Age = 0,
-                    Country = ""
+                    Country = "",
+                    City = "",
+                    Address = "",
+                    RToken = ""
                 });
 
                 await _db.SaveChangesAsync();
