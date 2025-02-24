@@ -1,5 +1,4 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using ShootingAcademy.Models.Controllers.Course;
 using ShootingAcademy.Models.DB;
 using ShootingAcademy.Models;
 using Microsoft.EntityFrameworkCore;
@@ -15,12 +14,10 @@ namespace ShootingAcademy.Controllers
     [ApiController]
     public class CompetitionController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
 
-        public CompetitionController(IConfiguration configuration, ApplicationDbContext context)
+        public CompetitionController(ApplicationDbContext context)
         {
-            _configuration = configuration;
             _context = context;
         }
 
@@ -39,10 +36,10 @@ namespace ShootingAcademy.Controllers
 
                 foreach (var competionTicket in user.Competions)
                 {
-                    Competion competion = _context.Competions
+                    Competion competion = await _context.Competions
                         .Include(com => com.Organization)
                         .Include(com => com.Members)
-                        .First(i => i.Id == competionTicket.CompetionId);
+                        .FirstAsync(i => i.Id == competionTicket.CompetionId);
 
                     if (!history && competion.Status == Competion.ActiveStatus.Ended)
                         continue;
@@ -66,94 +63,6 @@ namespace ShootingAcademy.Controllers
                 }
 
                 return Results.Json(competionTypes);
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
-        [HttpGet]
-        public async Task<IResult> Get([FromQuery] object form)
-        {
-            try
-            {
-                IEnumerable<Competion> Competions = await _context.Competions.AsNoTracking().ToListAsync();
-
-                return Results.Ok(new CompetitionResponse()
-                {
-
-                });
-
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
-
-        [HttpPost]
-        public async Task<IResult> Post([FromBody] object form)
-        {
-            try
-            {
-
-                //_context.Competions.Add();
-
-                return Results.Ok(new CompetitionResponse());
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
-        [HttpPut]
-        public async Task<IResult> Put([FromBody] object form)
-        {
-            try
-            {
-
-                //_context.Competions.Update();
-
-                return Results.Ok(new CompetitionResponse());
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
-        [HttpDelete]
-        public async Task<IResult> Delete(Guid id)
-        {
-            try
-            {
-                //_context.Competions.Remove();
-
-                return Results.Ok(new CompetitionResponse());
-
             }
             catch (BaseException apperr)
             {
