@@ -23,7 +23,7 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                
+                var a = autorizeData.UserGuid;
             }
             catch (BaseException exp)
             {

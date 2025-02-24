@@ -29,7 +29,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(new PasswordHasher("ALEXYS"));
-builder.Services.AddSingleton<AutorizeDataService>();
 
 JwtSettings access = new JwtSettings()
 {
