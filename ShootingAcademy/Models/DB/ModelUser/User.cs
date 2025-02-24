@@ -35,5 +35,6 @@ namespace ShootingAcademy.Models.DB.ModelUser
         public List<GroupMember> AthleteGroups { get; set; } = [];
         public List<Course> InstructoredCourses { get; set; } = [];
         public List<CourseMember> Courses { get; set; } = [];
+        public List<CompetionMember> Competions { get; set; } = [];
     }
 }
