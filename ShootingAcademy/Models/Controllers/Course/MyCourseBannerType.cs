@@ -15,6 +15,6 @@
         public bool is_closed { get; set; }
 
         public string started_at { get; set; }
-        public string finished_at { get; set; }
+        public string finished_at { get; set; } = "";
     }
 }
