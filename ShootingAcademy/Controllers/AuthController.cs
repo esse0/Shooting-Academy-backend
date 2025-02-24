@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
+using ShootingAcademy.Models.Controllers.Auth;
 using ShootingAcademy.Models.Errors;
 using ShootingAcademy.Services;
 
@@ -83,6 +84,8 @@ namespace ShootingAcademy.Controllers
         [HttpPost("register")]
         public async Task<IResult> Register([FromForm] RegisterModel model)
         {
+            Console.WriteLine(model.email);
+
             try
             {
                 var usr = await _db.Users.AddAsync(new()

@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ShootingAcademy.Models
+namespace ShootingAcademy.Models.Controllers.Auth
 {
     public class SigninModel
     {

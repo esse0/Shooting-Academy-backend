@@ -33,19 +33,19 @@ namespace ShootingAcademy.Models.DB.ModelUser
         public List<Course> InstructoredCourses { get; set; } = [];
         public List<CourseMember> Courses { get; set; } = [];
 
-        public static GetUserDto ToGetUserDto(User user)
-        {
-            return new GetUserDto
-            {
-                FirstName = user.FirstName,
-                SecoundName = user.SecoundName,
-                PatronymicName = user.PatronymicName,
-                Age = user.Age,
-                Grade = user.Grade,
-                Email = user.Email,
-                PasswordHash = user.PasswordHash,
-                //RoleId = user.RoleId,
-            };
-        }
+        //public static GetUserDto ToGetUserDto(User user)
+        //{
+        //    return new GetUserDto
+        //    {
+        //        FirstName = user.FirstName,
+        //        SecoundName = user.SecoundName,
+        //        PatronymicName = user.PatronymicName,
+        //        Age = user.Age,
+        //        Grade = user.Grade,
+        //        Email = user.Email,
+        //        PasswordHash = user.PasswordHash,
+        //        Role = user.RoleId,
+        //    };
+        //}
     }
 }

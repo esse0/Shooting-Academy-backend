@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ShootingAcademy.Models
+namespace ShootingAcademy.Models.Controllers.Auth
 {
     public class RegisterModel
     {
@@ -15,7 +15,7 @@ namespace ShootingAcademy.Models
         public string email {  get; set; }
 
         [Required(ErrorMessage = "Укажите ваш пароль")]
-        [StringLength(100, MinimumLength = 6, ErrorMessage = "Пароль должен быть не кароче 6-ти символов")]
+        [StringLength(100, MinimumLength = 6, ErrorMessage = "Пароль должен быть не короче 6-ти символов")]
         [DataType(DataType.Password, ErrorMessage = "Пароль не верный")]
         public string password { get; set; }
     }

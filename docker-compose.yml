@@ -17,7 +17,7 @@ services:
   database:
     image: postgres:15
     environment:
-      POSTGRES_DB: ALEXYS
+      POSTGRES_DB: SOSALDB
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: root
     ports:

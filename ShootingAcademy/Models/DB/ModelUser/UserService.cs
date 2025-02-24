@@ -13,44 +13,44 @@ namespace ShootingAcademy.Models.DB.ModelUser
             _context = context;
         }
 
-        public async Task<User> AddUserAsync(AuthRegisterRequest userToCreate)
-        {
-            User user = CreateUserDTO.ToUser(userToCreate);
+        //public async Task<User> AddUserAsync(AuthRegisterRequest userToCreate)
+        //{
+        //    User user = CreateUserDTO.ToUser(userToCreate);
 
-            _context.Users.Add(user);
-            await _context.SaveChangesAsync();
+        //    _context.Users.Add(user);
+        //    await _context.SaveChangesAsync();
 
-            return user;
-        }
-        public async Task UpdateUserAsync(UpdateUserDTO userToUpdate)
-        {
-            User user = UpdateUserDTO.ToUser(userToUpdate);
+        //    return user;
+        //}
+        //public async Task UpdateUserAsync(UpdateUserDTO userToUpdate)
+        //{
+        //    User user = UpdateUserDTO.ToUser(userToUpdate);
 
-            _context.Users.Update(user);
-            await _context.SaveChangesAsync();
-        }
+        //    _context.Users.Update(user);
+        //    await _context.SaveChangesAsync();
+        //}
 
-        public async Task DeleteUserAsync(User user)
-        {
-            _context.Users.Remove(user);
-            await _context.SaveChangesAsync();
-        }
+        //public async Task DeleteUserAsync(User user)
+        //{
+        //    _context.Users.Remove(user);
+        //    await _context.SaveChangesAsync();
+        //}
 
-        public async Task<User?> FindUserByIdAsync(AuthLoginRequest getUserDto)
-        {
-            User? user = await _context.Users.Where(x => x.Email == getUserDto.Email && x.PasswordHash == getUserDto.password).AsNoTracking().FirstOrDefaultAsync();
+        //public async Task<User?> FindUserByIdAsync(AuthLoginRequest getUserDto)
+        //{
+        //    User? user = await _context.Users.Where(x => x.Email == getUserDto.Email && x.PasswordHash == getUserDto.password).AsNoTracking().FirstOrDefaultAsync();
 
-            if (user == null) return null;
+        //    if (user == null) return null;
             
-            return user;
-        }
+        //    return user;
+        //}
 
-        public async Task<IEnumerable<GetUserDto>> GetUserAsync()
-        {
-            IEnumerable<User> Users = await _context.Users.AsNoTracking().ToListAsync();
+        //public async Task<IEnumerable<GetUserDto>> GetUserAsync()
+        //{
+        //    IEnumerable<User> Users = await _context.Users.AsNoTracking().ToListAsync();
 
-            return Users.Select(User.ToGetUserDto);
-        }
+        //    return Users.Select(User.ToGetUserDto);
+        //}
 
     }
 }
