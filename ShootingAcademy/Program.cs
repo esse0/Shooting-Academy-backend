@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Middleware;
 using ShootingAcademy.Models;
@@ -11,6 +12,15 @@ var configuration = new ConfigurationBuilder()
     .Build();
 
 var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+
+builder.Services.AddDistributedMemoryCache();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));
@@ -36,6 +46,29 @@ JwtSettings refresh = new JwtSettings()
     ExpiryMinutes = 60,
 };
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("Coors",
+                      policy =>
+                      {
+                          policy.WithOrigins("http://localhost:5173")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
+                      });
+});
+
+builder.Services
+    .AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
+    .AddJwtBearer(options =>
+    {
+        options.TokenValidationParameters = JwtManager.GetParameters(access);
+    });
+
 builder.Services.AddSingleton(new JwtManager(access, refresh));
 
 var app = builder.Build();
@@ -43,10 +76,17 @@ var app = builder.Build();
 app.UseSwagger();
 app.UseSwaggerUI();
 
-app.UseAuthorization();
+app.UseGetToken();
+
 app.MapControllers();
 app.UseStaticFiles();
-app.UseGetToken();
+app.UseCors("Coors");
+
+app.UseSession();
+
+app.UseAuthentication();
+app.UseAuthorization();
+
 
 app.MapFallbackToFile("index.html");
 

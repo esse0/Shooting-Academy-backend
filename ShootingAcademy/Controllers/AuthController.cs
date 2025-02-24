@@ -28,11 +28,12 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                var user = await _db.Users.FirstAsync(i => i.Email == model.email);
+                User user = await _db.Users.FirstAsync(i => i.Email == model.email) 
+                    ?? throw new BaseException("Пароль или почта не верные");
 
                 if (!_passwordHasher.Verify(model.password, user.PasswordHash))
                 {
-                    throw new BaseException("Пароли не совпадают");
+                    throw new BaseException("Пароль или почта не верные");
                 }
 
                 HttpContext.Response.Cookies.Append(
@@ -94,6 +95,9 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
+                if (_db.Users.Where(usr => usr.Email == model.email).Any())
+                    throw new BaseException("Данная почта занята!");
+
                 // Странно что половина полей пустые
                 var user = await _db.Users.AddAsync(new User()
                 {
@@ -105,7 +109,10 @@ namespace ShootingAcademy.Controllers
                     Role = "Athlete",
                     Grade = "",
                     Age = 0,
-                    Country = ""
+                    Country = "",
+                    City = "",
+                    Address = "",
+                    RToken = ""
                 });
 
                 await _db.SaveChangesAsync();
@@ -124,6 +131,10 @@ namespace ShootingAcademy.Controllers
                     Id = user.Entity.Id,
                     Role = user.Entity.Role
                 });
+            }
+            catch (BaseException exp)
+            {
+                return Results.Json(exp.GetModel(), statusCode: exp.Code);
             }
             catch
             {
