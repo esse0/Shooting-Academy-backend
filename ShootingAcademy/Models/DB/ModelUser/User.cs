@@ -29,23 +29,10 @@ namespace ShootingAcademy.Models.DB.ModelUser
 
         public string Role { get; set; }
 
+        public string RToken { get; set; }
+
         public List<GroupMember> AthleteGroups { get; set; } = [];
         public List<Course> InstructoredCourses { get; set; } = [];
         public List<CourseMember> Courses { get; set; } = [];
-
-        //public static GetUserDto ToGetUserDto(User user)
-        //{
-        //    return new GetUserDto
-        //    {
-        //        FirstName = user.FirstName,
-        //        SecoundName = user.SecoundName,
-        //        PatronymicName = user.PatronymicName,
-        //        Age = user.Age,
-        //        Grade = user.Grade,
-        //        Email = user.Email,
-        //        PasswordHash = user.PasswordHash,
-        //        Role = user.RoleId,
-        //    };
-        //}
     }
 }

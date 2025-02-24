@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.Auth;
 using ShootingAcademy.Models.DB.ModelUser;
-using ShootingAcademy.Models.Errors;
+using ShootingAcademy.Models.Exceptions;
 using ShootingAcademy.Services;
 
 namespace ShootingAcademy.Controllers
@@ -32,7 +32,7 @@ namespace ShootingAcademy.Controllers
 
                 if (!_passwordHasher.Verify(model.password, user.PasswordHash))
                 {
-                    throw new ApplicationException("Пароли не совпадают");
+                    throw new BaseException("Пароли не совпадают");
                 }
 
                 HttpContext.Response.Cookies.Append(
@@ -49,7 +49,7 @@ namespace ShootingAcademy.Controllers
                     _jwtManager.JwtCookieOptions
                 );
 
-                //user.Token = token;
+                user.RToken = token;
 
                 _db.Users.Update(user);
 
@@ -57,15 +57,9 @@ namespace ShootingAcademy.Controllers
 
                 return Results.Ok();
             }
-            catch (ApplicationException apperr)
+            catch (BaseException apperr)
             {
-                return Results.Json(new BaseError()
-                {
-                    Show = true,
-                    Code = "400",
-                    Error = true,
-                    Message = apperr.Message
-                }, statusCode: 400);
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
             }
             catch (Exception err)
             {
@@ -85,10 +79,9 @@ namespace ShootingAcademy.Controllers
         [HttpPost("register")]
         public async Task<IResult> Register([FromForm] RegisterModel model)
         {
-            Console.WriteLine(model.email);
-
             try
             {
+                // Странно что половина полей пустые
                 var usr = await _db.Users.AddAsync(new User()
                 {
                     FirstName = model.name,
@@ -106,13 +99,7 @@ namespace ShootingAcademy.Controllers
             }
             catch
             {
-                return Results.Json(new BaseError()
-                {
-                    Show = true,
-                    Code = "400",
-                    Error = true,
-                    Message = "Some error!"
-                }, statusCode: 400);
+                return Results.Problem("AuthController->Register", statusCode: 400);
             }
 
             return Results.Ok();

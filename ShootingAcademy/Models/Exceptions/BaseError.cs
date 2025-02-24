@@ -1,4 +1,4 @@
-﻿namespace ShootingAcademy.Models.Errors
+﻿namespace ShootingAcademy.Models.Exceptions
 {
     [Serializable]
     public class BaseError
