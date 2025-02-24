@@ -90,7 +90,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPost("register")]
-        public async Task<IResult> Register([FromForm] RegisterModel model)
+        public async Task<IResult> Register([FromBody] RegisterModel model)
         {
             try
             {
