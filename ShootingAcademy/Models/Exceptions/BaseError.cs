@@ -1,6 +1,5 @@
 ﻿namespace ShootingAcademy.Models.Exceptions
 {
-    [Serializable]
     public class BaseError
     {
         public bool Error { get; set; }
