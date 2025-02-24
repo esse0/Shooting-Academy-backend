@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.Course;
 using ShootingAcademy.Models.DB;
+using ShootingAcademy.Models.Exceptions;
 
 namespace ShootingAcademy.Controllers
 {
@@ -20,83 +21,91 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] object form)
+        public async Task<IResult> Get([FromQuery] object form)
         {
             try
             {
                 IEnumerable<Course> Courses = await _context.Courses.AsNoTracking().ToListAsync();
 
-                return Ok(new CourseResponse()
+                return Results.Ok(new CourseResponse()
                 {
                     
                 });
             }
-            catch (Exception error)
+            catch (BaseException apperr)
             {
-                return BadRequest(new CourseResponse()
-                {
-                    error = error.Message,
-                });
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
             }
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> Post([FromBody] object form)
+        public async Task<IResult> Post([FromBody] object form)
         {
             try
             {
 
                 //_context.Courses.Add();
 
-                return Ok(new CourseResponse());
+                return Results.Ok(new CourseResponse());
             }
-            catch (Exception error)
+            catch (BaseException apperr)
             {
-                return BadRequest(new CourseResponse()
-                {
-                    error = error.Message,
-                });
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
             }
+
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put([FromBody] object form)
+        public async Task<IResult> Put([FromBody] object form)
         {
             try
             {
 
                 //_context.Courses.Update();
 
-                return Ok(new CourseResponse());
+                return Results.Ok(new CourseResponse());
             }
-            catch (Exception error)
+            catch (BaseException apperr)
             {
-                return BadRequest(new CourseResponse()
-                {
-                    error = error.Message,
-                });
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
             }
         }
         [HttpDelete]
-        public async Task<IActionResult> Delete(Guid id)
+        public async Task<IResult> Delete(Guid id)
         {
             try
             {
                 //_context.Courses.Remove(await _context.Courses.FirstAsync(i => i.Id == id));
 
-                return Ok(new CourseResponse());
+                return Results.Ok(new CourseResponse());
 
             }
-            catch (Exception error)
+            catch (BaseException apperr)
             {
-                return BadRequest(new CourseResponse()
-                {
-                    error = error.Message,
-                });
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
             }
         }
-
 
     }
 }
