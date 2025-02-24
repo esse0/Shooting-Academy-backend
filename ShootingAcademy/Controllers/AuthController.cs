@@ -2,6 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.Auth;
+using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Models.Errors;
 using ShootingAcademy.Services;
 
@@ -88,7 +89,7 @@ namespace ShootingAcademy.Controllers
 
             try
             {
-                var usr = await _db.Users.AddAsync(new()
+                var usr = await _db.Users.AddAsync(new User()
                 {
                     FirstName = model.name,
                     SecoundName = model.lastName,

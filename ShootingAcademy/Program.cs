@@ -7,6 +7,7 @@ using ShootingAcademy.Models;
 using ShootingAcademy.Models.DB;
 using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Services;
+using System.Data.Common;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -32,7 +33,7 @@ var configuration = new ConfigurationBuilder()
 //        };
 //    });
 
-var connectionString = builder.Configuration.GetConnectionString("DebugConnection");
+var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseNpgsql(connectionString));

@@ -8,16 +8,16 @@ services:
     ports:
       - "8080:8080"
     environment:
-      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_ENVIRONMENT=Production
       - ASPNETCORE_URLS=http://+:8080
-      - ConnectionStrings__DebugConnection=Host=database;Port=5432;Database=SOSALDB;Username=admin;Password=root
+      - ConnectionStrings__DefaultConnection=Host=database;Port=5432;Database=ALEXYSDB;Username=admin;Password=root
     depends_on:
       - database
 
   database:
     image: postgres:15
     environment:
-      POSTGRES_DB: SOSALDB
+      POSTGRES_DB: ALEXYSDB
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: root
     ports:
