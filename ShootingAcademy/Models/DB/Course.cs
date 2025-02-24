@@ -33,5 +33,9 @@ namespace ShootingAcademy.Models.DB
         public List<CourseMember> Members { get; set; } = [];
 
         public List<Module> Modules { get; set; } = [];
+
+        public List<Feature> Features { get; set; } = [];
+
+        public List<Fraq> Faqs { get; set; } = [];
     }
 }

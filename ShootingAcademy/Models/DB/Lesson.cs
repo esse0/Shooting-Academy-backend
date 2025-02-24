@@ -16,7 +16,6 @@ namespace ShootingAcademy.Models.DB
 
         public string Description { get; set; }
 
-        // What is???
-        public Guid VideoId { get; set; }
+        public string VideoLink { get; set; }
     }
 }

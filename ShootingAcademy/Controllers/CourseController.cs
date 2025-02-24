@@ -90,67 +90,80 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPost]
-        public async Task<IResult> Post([FromBody] object form)
+        [HttpGet("fulldata")]
+        public async Task<IResult> GetCourseFullData([FromQuery] string id)
         {
             try
             {
+                Guid cguid = Guid.Parse(id);
 
-                //_context.Courses.Add();
+                Course course = await _context.Courses
+                    .Include(c => c.Instructor)
+                    .Include(c => c.Modules)
+                    .Include(c => c.Modules.Select(m => m.Lessons))
+                    .Include(c => c.Modules.Select(m => m.Lessons.Select(l => l.Module)))
+                    .Include(c => c.Faqs)
+                    .Include(c => c.Features)
+                    .FirstAsync(i => i.Id == cguid);
 
-                return Results.Ok();
+                return Results.Json(new CourseModel()
+                {
+                    Id = course.Id.ToString(),
+                    category = course.Category,
+                    description = course.Description,
+                    duration = course.Duration,
+                    title = course.Title,
+                    is_closed = course.IsClosed,
+                    level = course.Level,
+                    peapeopleRateCount = course.PeopleRateCount,
+                    rate = course.Rate,
+
+                    instructor = FullUserModel.FromEntity(course.Instructor),
+
+                    modules = course.Modules.Select(module =>
+                    {
+                        return new ModuleModel()
+                        {
+                            id = module.Id.ToString(),
+                            title = module.Title,
+                            lessons = module.Lessons.Select(lesson =>
+                            {
+                                return new LessonModel()
+                                {
+                                    id = lesson.Id.ToString(),
+                                    description = lesson.Description,
+                                    title = lesson.Title,
+                                    videoLink = lesson.VideoLink,
+                                };
+                            }).ToList(),
+                        };
+                    }).ToList(),
+
+                    faqs = course.Faqs.Select(faq =>
+                    {
+                        return new FraqModel()
+                        {
+                            id = faq.Id.ToString(),
+                            answer = faq.Answer,
+                            question = faq.Question,
+                        };
+                    }).ToList(),
+
+                    features = course.Features.Select(feature =>
+                    {
+                        return new FeatureModel()
+                        {
+                            id = feature.Id.ToString(),
+                            description = feature.Description,
+                            title = feature.Title,
+                        };
+                    }).ToList()
+                });
             }
-            catch (BaseException apperr)
+            catch (BaseException exp)
             {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
+                return Results.Json(exp.GetModel(), statusCode: exp.Code);
             }
         }
-
-        [HttpPut]
-        public async Task<IResult> Put([FromBody] object form)
-        {
-            try
-            {
-
-                //_context.Courses.Update();
-
-                return Results.Ok();
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-        [HttpDelete]
-        public async Task<IResult> Delete(Guid id)
-        {
-            try
-            {
-                //_context.Courses.Remove(await _context.Courses.FirstAsync(i => i.Id == id));
-
-                return Results.Ok();
-
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
     }
 }
