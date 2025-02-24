@@ -22,7 +22,7 @@ namespace ShootingAcademy.Services
             JwtCookieOptions = new CookieOptions()
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.None,
+                SameSite = SameSiteMode.Lax,
                 MaxAge = TimeSpan.FromMinutes(120),
             };
         }
