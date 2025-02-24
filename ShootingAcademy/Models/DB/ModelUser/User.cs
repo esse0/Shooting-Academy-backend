@@ -1,6 +1,4 @@
-﻿using ShootingAcademy.Models.DB.ModelUser.DTO;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ShootingAcademy.Models.DB.ModelUser
 {
@@ -20,7 +18,10 @@ namespace ShootingAcademy.Models.DB.ModelUser
         public int Age { get; set; }
 
         public string Grade { get; set; }
+
         public string Country { get; set; }
+        public string City { get; set; }
+        public string Address { get; set; }
 
         [Required]
         public string Email { get; set; }

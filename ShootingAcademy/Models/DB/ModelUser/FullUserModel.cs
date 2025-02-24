@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 
-namespace ShootingAcademy.Models.DB.ModelUser.DTO
+namespace ShootingAcademy.Models.DB.ModelUser
 {
     public class FullUserModel
     {
@@ -13,7 +13,10 @@ namespace ShootingAcademy.Models.DB.ModelUser.DTO
         public int Age { get; set; }
 
         public string Grade { get; set; }
+
         public string Country { get; set; }
+        public string City { get; set; }
+        public string Address { get; set; }
 
         public string Email { get; set; }
 

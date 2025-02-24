@@ -3,7 +3,6 @@ using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.Auth;
 using ShootingAcademy.Models.DB.ModelUser;
-using ShootingAcademy.Models.DB.ModelUser.DTO;
 using ShootingAcademy.Models.Exceptions;
 using ShootingAcademy.Services;
 
@@ -63,6 +62,8 @@ namespace ShootingAcademy.Controllers
                     PatronymicName = user.PatronymicName,
                     Age = user.Age,
                     Country = user.Country,
+                    City = user.City,
+                    Address = user.Address,
                     Grade = user.Grade,
                     Email = user.Email,
                     Id = user.Id,
@@ -94,7 +95,7 @@ namespace ShootingAcademy.Controllers
             try
             {
                 // Странно что половина полей пустые
-                var usr = await _db.Users.AddAsync(new User()
+                var user = await _db.Users.AddAsync(new User()
                 {
                     FirstName = model.name,
                     SecoundName = model.lastName,
@@ -108,13 +109,26 @@ namespace ShootingAcademy.Controllers
                 });
 
                 await _db.SaveChangesAsync();
+
+                return Results.Json(new FullUserModel()
+                {
+                    FirstName = user.Entity.FirstName,
+                    SecoundName = user.Entity.SecoundName,
+                    PatronymicName = user.Entity.PatronymicName,
+                    Age = user.Entity.Age,
+                    Country = user.Entity.Country,
+                    City = user.Entity.City,
+                    Address = user.Entity.Address,
+                    Grade = user.Entity.Grade,
+                    Email = user.Entity.Email,
+                    Id = user.Entity.Id,
+                    Role = user.Entity.Role
+                });
             }
             catch
             {
                 return Results.Problem("AuthController->Register", statusCode: 400);
             }
-
-            return Results.Ok();
         }
     }
 }
