@@ -24,26 +24,25 @@ namespace ShootingAcademy.Controllers
         [HttpGet]
         public async Task<IResult> Get([FromQuery] object form)
         {
-            try
-            {
-                IEnumerable<Course> Courses = await _context.Courses.AsNoTracking().ToListAsync();
+            IEnumerable<Course> Courses = await _context.Courses.ToListAsync();
 
-                return Results.Ok();
-            }
-            catch (BaseException apperr)
+            return Results.Json(Courses.Select(course =>
             {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
-            }
-
-            catch (Exception err)
-            {
-                return Results.Problem(err.Message, statusCode: 400);
-            }
+                return new CourseModel()
+                {
+                    Id = course.Id.ToString(),
+                    category = course.Category,
+                    description = course.Description,
+                    duration = course.Duration,
+                    level = course.Level,
+                    rate = course.Rate,
+                    title = course.Title,
+                };
+            }));
         }
 
-
         [HttpGet("user"), Authorize]
-        public async Task<IResult> GetUserCourses([FromQuery] bool history)
+        public async Task<IResult> GetUserCourses([FromQuery] bool history = false)
         {
             try
             {

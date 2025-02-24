@@ -16,6 +16,8 @@ namespace ShootingAcademy.Models.DB
 
         public string Duration { get; set; }
 
+        public string Category { get; set; }
+
         public string Level { get; set; }
 
         public int Rate { get; set; }
