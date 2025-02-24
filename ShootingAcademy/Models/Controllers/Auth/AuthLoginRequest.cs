@@ -2,7 +2,7 @@
 {
     public class AuthLoginRequest
     {
-        public string Email;
+        public string email;
         public string password;
     }
 }
