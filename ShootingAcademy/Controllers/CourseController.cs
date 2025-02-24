@@ -72,7 +72,7 @@ namespace ShootingAcademy.Controllers
                         level = course.Level,
                         title = course.Title
                     };
-                }).ToArray());
+                }));
             }
             catch (BaseException apperr)
             {
