@@ -7,8 +7,8 @@ namespace ShootingAcademy.Models.DB
     {
         public Guid Id { get; set; }
 
-        public Guid CompetionId { get; set; }
-        [ForeignKey(nameof(CompetionId))]
+        public Guid CourseId { get; set; }
+        [ForeignKey(nameof(CourseId))]
         public Course Course { get; set; }
 
         public Guid UserId { get; set; }

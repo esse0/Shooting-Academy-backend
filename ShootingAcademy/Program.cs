@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Npgsql;
 using ShootingAcademy.Middleware;
 using ShootingAcademy.Models;
 using ShootingAcademy.Services;
@@ -22,8 +23,16 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
+var dataSourceBuilder = new NpgsqlDataSourceBuilder(connectionString);
+dataSourceBuilder.EnableDynamicJson();
+
+var dataSource = dataSourceBuilder.Build();
+builder.Services.AddSingleton(dataSource);
+
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseNpgsql(connectionString));
+{
+    options.UseNpgsql(dataSource);
+});
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();

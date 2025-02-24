@@ -1,22 +1,23 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.Course;
 using ShootingAcademy.Models.DB;
+using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Models.Exceptions;
+using ShootingAcademy.Services;
 
 namespace ShootingAcademy.Controllers
 {
-    [Route("[controller]")]
+    [Route("api/[controller]")]
     [ApiController]
     public class CourseController : ControllerBase
     {
-        private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
 
-        public CourseController(IConfiguration configuration, ApplicationDbContext context)
+        public CourseController(ApplicationDbContext context)
         {
-            _configuration = configuration;
             _context = context;
         }
 
@@ -40,6 +41,49 @@ namespace ShootingAcademy.Controllers
             }
         }
 
+
+        [HttpGet("user"), Authorize]
+        public async Task<IResult> GetUserCourses()
+        {
+            try
+            {
+                Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                User user = await _context.Users
+                    .Include(i => i.Courses)
+                    .FirstAsync(i => i.Id == userGuid);
+
+                return Results.Json(user.Courses.Select(courseTicket =>
+                {
+                    Course course = _context.Courses
+                        .First(i => i.Id == courseTicket.CourseId);
+
+                    // 0_o
+                    Random rand = new Random();
+
+                    return new MyCourseBannerType()
+                    {
+                        completed_percent = rand.Next(0, 100),
+                        duration = course.Duration,
+                        finished_at = courseTicket.FinishedAt.ToString(),
+                        started_at = courseTicket.StartedAt.ToString(),
+                        id = course.Id.ToString(),
+                        is_closed = courseTicket.IsClosed,
+                        level = course.Level,
+                        title = course.Title
+                    };
+                }));
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
 
         [HttpPost]
         public async Task<IResult> Post([FromBody] object form)
