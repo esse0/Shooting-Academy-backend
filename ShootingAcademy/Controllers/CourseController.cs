@@ -27,10 +27,7 @@ namespace ShootingAcademy.Controllers
             {
                 IEnumerable<Course> Courses = await _context.Courses.AsNoTracking().ToListAsync();
 
-                return Results.Ok(new CourseResponse()
-                {
-                    
-                });
+                return Results.Ok();
             }
             catch (BaseException apperr)
             {
@@ -52,7 +49,7 @@ namespace ShootingAcademy.Controllers
 
                 //_context.Courses.Add();
 
-                return Results.Ok(new CourseResponse());
+                return Results.Ok();
             }
             catch (BaseException apperr)
             {
@@ -64,7 +61,6 @@ namespace ShootingAcademy.Controllers
                 return Results.Problem(err.Message, statusCode: 400);
             }
         }
-        }
 
         [HttpPut]
         public async Task<IResult> Put([FromBody] object form)
@@ -74,7 +70,7 @@ namespace ShootingAcademy.Controllers
 
                 //_context.Courses.Update();
 
-                return Results.Ok(new CourseResponse());
+                return Results.Ok();
             }
             catch (BaseException apperr)
             {
@@ -93,7 +89,7 @@ namespace ShootingAcademy.Controllers
             {
                 //_context.Courses.Remove(await _context.Courses.FirstAsync(i => i.Id == id));
 
-                return Results.Ok(new CourseResponse());
+                return Results.Ok();
 
             }
             catch (BaseException apperr)
