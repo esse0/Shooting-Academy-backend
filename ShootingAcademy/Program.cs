@@ -29,6 +29,7 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSingleton(new PasswordHasher("ALEXYS"));
+builder.Services.AddSingleton<AutorizeDataService>();
 
 JwtSettings access = new JwtSettings()
 {
@@ -51,7 +52,10 @@ builder.Services.AddCors(options =>
     options.AddPolicy("Coors",
                       policy =>
                       {
-                          policy.WithOrigins("http://localhost:5173");
+                          policy.WithOrigins("http://localhost:5173")
+                          .AllowAnyMethod()
+                          .AllowAnyHeader()
+                          .AllowCredentials();
                       });
 });
 
