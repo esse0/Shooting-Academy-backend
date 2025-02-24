@@ -22,8 +22,8 @@ namespace ShootingAcademy.Services
             JwtCookieOptions = new CookieOptions()
             {
                 HttpOnly = true,
-                SameSite = SameSiteMode.Strict,
-                MaxAge = TimeSpan.FromMinutes(120)
+                SameSite = SameSiteMode.None,
+                MaxAge = TimeSpan.FromMinutes(120),
             };
         }
 
