@@ -94,6 +94,9 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
+                if (_db.Users.Where(usr => usr.Email == model.email).Any())
+                    throw new BaseException("Данная почта занята!");
+
                 // Странно что половина полей пустые
                 var user = await _db.Users.AddAsync(new User()
                 {
@@ -127,6 +130,10 @@ namespace ShootingAcademy.Controllers
                     Id = user.Entity.Id,
                     Role = user.Entity.Role
                 });
+            }
+            catch (BaseException exp)
+            {
+                return Results.Json(exp.GetModel(), statusCode: exp.Code);
             }
             catch
             {
