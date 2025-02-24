@@ -21,6 +21,12 @@ namespace ShootingAcademy.Controllers
         }
 
 
+        [HttpGet("auth"), Authorize]
+        public IResult Auth()
+        {
+            return Results.Ok();
+        }
+
         [HttpPut, Authorize]
         public async Task<IResult> Put([FromBody] UserProfileData profileData)
         {
