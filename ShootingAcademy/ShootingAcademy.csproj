@@ -15,12 +15,16 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="Models\Controllers\Lesson\**" />
     <Compile Remove="Models\DB\ModelRole\DTO\**" />
     <Compile Remove="wwwroot\**" />
+    <Content Remove="Models\Controllers\Lesson\**" />
     <Content Remove="Models\DB\ModelRole\DTO\**" />
     <Content Remove="wwwroot\**" />
+    <EmbeddedResource Remove="Models\Controllers\Lesson\**" />
     <EmbeddedResource Remove="Models\DB\ModelRole\DTO\**" />
     <EmbeddedResource Remove="wwwroot\**" />
+    <None Remove="Models\Controllers\Lesson\**" />
     <None Remove="Models\DB\ModelRole\DTO\**" />
     <None Remove="wwwroot\**" />
   </ItemGroup>
@@ -35,9 +39,5 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.Design" Version="1.1.0" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.6.2" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Models\Controllers\Lesson\" />
   </ItemGroup>
 </Project>
