@@ -28,11 +28,12 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                var user = await _db.Users.FirstAsync(i => i.Email == model.email);
+                User user = await _db.Users.FirstAsync(i => i.Email == model.email) 
+                    ?? throw new BaseException("Пароль или почта не верные");
 
                 if (!_passwordHasher.Verify(model.password, user.PasswordHash))
                 {
-                    throw new BaseException("Пароли не совпадают");
+                    throw new BaseException("Пароль или почта не верные");
                 }
 
                 HttpContext.Response.Cookies.Append(
