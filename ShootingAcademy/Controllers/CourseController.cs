@@ -43,7 +43,7 @@ namespace ShootingAcademy.Controllers
 
 
         [HttpGet("user"), Authorize]
-        public async Task<IResult> GetUserCourses()
+        public async Task<IResult> GetUserCourses([FromQuery] bool history)
         {
             try
             {
@@ -53,15 +53,19 @@ namespace ShootingAcademy.Controllers
                     .Include(i => i.Courses)
                     .FirstAsync(i => i.Id == userGuid);
 
-                return Results.Json(user.Courses.Select(courseTicket =>
+                List<MyCourseBannerType> courseBannerTypes = [];
+
+                Random rand = new();
+
+                foreach (var courseTicket in user.Courses)
                 {
-                    Course course = _context.Courses
-                        .First(i => i.Id == courseTicket.CourseId);
+                    Course course = await _context.Courses
+                                          .FirstAsync(i => i.Id == courseTicket.CourseId);
 
-                    // 0_o
-                    Random rand = new Random();
+                    if (!history && courseTicket.IsClosed)
+                        continue;
 
-                    return new MyCourseBannerType()
+                    courseBannerTypes.Add(new MyCourseBannerType()
                     {
                         completed_percent = rand.Next(0, 100),
                         duration = course.Duration,
@@ -71,8 +75,10 @@ namespace ShootingAcademy.Controllers
                         is_closed = courseTicket.IsClosed,
                         level = course.Level,
                         title = course.Title
-                    };
-                }));
+                    });
+                }
+
+                return Results.Json(courseBannerTypes);
             }
             catch (BaseException apperr)
             {
