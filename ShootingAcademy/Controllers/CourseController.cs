@@ -22,7 +22,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpGet]
-        public async Task<IResult> Get([FromQuery] object form)
+        public async Task<IResult> Get()
         {
             IEnumerable<Course> Courses = await _context.Courses.ToListAsync();
 
