@@ -18,7 +18,7 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                //profileData.
+                
             }
             catch (BaseException exp)
             {

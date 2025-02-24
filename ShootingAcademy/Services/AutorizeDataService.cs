@@ -2,17 +2,15 @@
 {
     public class AutorizeDataService
     {
-        private readonly HttpContent content;
+        private readonly HttpContext context;
 
-        //public Guid UserGuid => content.Use.Claims.ToArray()[0].Value;
-        //public bool IsAutorize => content.us.Claims.Any();
-        //public string Role => content.User.Claims.ToArray()[1].Value;
+        public Guid UserGuid => Guid.Parse(context.User.Claims.ToArray()[0].Value);
+        public bool IsAutorize => context.User.Claims.Any();
+        public string Role => context.User.Claims.ToArray()[1].Value;
 
-        //public AutorizeDataService(HttpContent content)
-        //{
-        //    this.content = content;
-
-        //    content
-        //}
+        public AutorizeDataService(HttpContext context)
+        {
+            this.context = context;
+        }
     }
 }
