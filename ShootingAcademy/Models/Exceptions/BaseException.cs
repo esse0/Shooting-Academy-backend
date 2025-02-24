@@ -27,7 +27,7 @@
             return new BaseError()
             {
                 Message = Message,
-                Code = Code.ToString(),
+                Code = Code,
                 Error = IsError,
                 Show = Show
             };
