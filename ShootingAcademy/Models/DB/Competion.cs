@@ -6,6 +6,12 @@ namespace ShootingAcademy.Models.DB
 {
     public class Competion
     {
+        public enum ActiveStatus
+        {
+            Pending, Active, Ended
+        }
+
+
         [Key]
         public Guid Id { get; set; }
 
@@ -15,20 +21,20 @@ namespace ShootingAcademy.Models.DB
 
         public DateTime DateTime { get; set; }
 
-        public string MaxMembersCount { get; set; }
+        public int MaxMembersCount { get; set; }
 
         public string Venue { get; set; }
         public string Country { get; set; }
         public string City { get; set; }
 
-        public string Exsecise { get; set; }
+        public string Exercise { get; set; }
 
         [Required]
         public Guid OrganizationId { get; set; }
         [ForeignKey(nameof(OrganizationId))]
         public User Organization { get; set; }
 
-        public string Status { get; set; }
+        public ActiveStatus Status { get; set; }
 
         public List<User> Members { get; set; } = [];
     }
