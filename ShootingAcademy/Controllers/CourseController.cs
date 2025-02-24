@@ -1,6 +1,4 @@
-﻿using Microsoft.AspNetCore.Cors.Infrastructure;
-using Microsoft.AspNetCore.Http;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.Course;
@@ -22,7 +20,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult>  Get([FromQuery] object form)
+        public async Task<IActionResult> Get([FromQuery] object form)
         {
             try
             {
@@ -32,7 +30,6 @@ namespace ShootingAcademy.Controllers
                 {
                     
                 });
-
             }
             catch (Exception error)
             {

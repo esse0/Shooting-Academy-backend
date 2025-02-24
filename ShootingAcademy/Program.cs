@@ -1,14 +1,7 @@
-using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.IdentityModel.Tokens;
 using ShootingAcademy.Middleware;
 using ShootingAcademy.Models;
-using ShootingAcademy.Models.DB;
-using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Services;
-using System.Data.Common;
-using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 

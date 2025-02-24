@@ -3,6 +3,7 @@ using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.Auth;
 using ShootingAcademy.Models.DB.ModelUser;
+using ShootingAcademy.Models.DB.ModelUser.DTO;
 using ShootingAcademy.Models.Exceptions;
 using ShootingAcademy.Services;
 
@@ -55,7 +56,18 @@ namespace ShootingAcademy.Controllers
 
                 await _db.SaveChangesAsync();
 
-                return Results.Ok();
+                return Results.Json(new FullUserModel()
+                {
+                    FirstName = user.FirstName,
+                    SecoundName = user.SecoundName,
+                    PatronymicName = user.PatronymicName,
+                    Age = user.Age,
+                    Country = user.Country,
+                    Grade = user.Grade,
+                    Email = user.Email,
+                    Id = user.Id,
+                    Role = user.Role
+                });
             }
             catch (BaseException apperr)
             {
