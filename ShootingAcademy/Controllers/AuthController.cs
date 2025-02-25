@@ -81,7 +81,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpGet("signout")]
+        [HttpPost("signout")]
         public IResult logoutJwt()
         {
             HttpContext.Response.Cookies.Delete("AccessToken");

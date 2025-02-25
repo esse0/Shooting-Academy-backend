@@ -100,8 +100,7 @@ namespace ShootingAcademy.Controllers
                 Course course = await _context.Courses
                     .Include(c => c.Instructor)
                     .Include(c => c.Modules)
-                    .Include(c => c.Modules.Select(m => m.Lessons))
-                    .Include(c => c.Modules.Select(m => m.Lessons.Select(l => l.Module)))
+                    .ThenInclude(m => m.Lessons)
                     .Include(c => c.Faqs)
                     .Include(c => c.Features)
                     .FirstAsync(i => i.Id == cguid);
@@ -165,5 +164,11 @@ namespace ShootingAcademy.Controllers
                 return Results.Json(exp.GetModel(), statusCode: exp.Code);
             }
         }
+
+        //[HttpPost("subscribe"), Authorize]
+        //public async Task<IResult> SubscribeUser()
+        //{
+
+        //}
     }
 }
