@@ -114,7 +114,7 @@ namespace ShootingAcademy.Controllers
                     title = course.Title,
                     is_closed = course.IsClosed,
                     level = course.Level,
-                    peapeopleRateCount = course.PeopleRateCount,
+                    peopleRateCount = course.PeopleRateCount,
                     rate = course.Rate,
 
                     instructor = FullUserModel.FromEntity(course.Instructor),

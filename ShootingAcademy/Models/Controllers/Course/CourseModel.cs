@@ -11,7 +11,7 @@ namespace ShootingAcademy.Models.Controllers.Course
         public string level { get; set; }
         public int rate { get; set; }
         public string category { get; set; }
-        public int? peapeopleRateCount { get; set; }
+        public int? peopleRateCount { get; set; }
 
         public bool? is_closed { get; set; }
 
