@@ -40,7 +40,10 @@ namespace ShootingAcademy.Middleware
             {
                 var dbContect = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
 
-                var user = dbContect.Users.First(u => u.Id == userId);
+                var user = dbContect.Users.FirstOrDefault(u => u.Id == userId);
+               
+                if (user == null)
+                    return _next(httpContext);
 
                 if (user.RToken != refresh)
                     return _next(httpContext);
