@@ -165,10 +165,52 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        //[HttpPost("subscribe"), Authorize]
-        //public async Task<IResult> SubscribeUser()
-        //{
+        [HttpPost("subscribe"), Authorize]
+        public async Task<IResult> SubscribeUser([FromQuery] string courseId)
+        {
+            try
+            {
+                Guid cguid = Guid.Parse(courseId);
 
-        //}
+                Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                User user = await _context.Users
+                    .Include(i => i.Courses)
+                    .FirstAsync(i => i.Id == userGuid);
+
+                foreach (var userCourse in user.Courses)
+                {
+                    if (userCourse.Id == cguid) throw new BaseException("The user is already on the course");
+                }
+
+                Course? course = await _context.Courses
+                    .FirstOrDefaultAsync(i => i.Id == cguid);
+
+                if (course == null) throw new BaseException($"Could not find {courseId}");
+
+                _context.CourseMembers.Add(new CourseMember()
+                {
+                    CourseId = cguid,
+                    UserId = userGuid,
+                    IsClosed = false,
+                    CompletedLessons = [],
+                    StartedAt = DateTime.UtcNow,
+                    FinishedAt = null,
+                });
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
     }
 }
