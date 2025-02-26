@@ -26,24 +26,29 @@ namespace ShootingAcademy.Controllers
         public async Task<IResult> Get()
         {
             IEnumerable<Competion> Competions = await _context.Competions
-                                                            .Where(i => i.Status != Competion.ActiveStatus.Ended)
-                                                            .ToListAsync();
+                .Where(i => i.Status != Competion.ActiveStatus.Ended)
+                .Include(c => c.Organization)
+                .Include(c => c.Members)
+                .AsNoTracking()
+                .ToListAsync();
 
             return Results.Json(Competions.Select(competion =>
             {
                 return new CompetionType
                 {
-                    status = Enum.GetName(competion.Status),
+                    status = Enum.GetName(typeof(Competion.ActiveStatus), competion.Status),
                     city = competion.City,
                     country = competion.Country,
                     maxMebmerCount = competion.MaxMembersCount,
-                    memberCount = competion.Members.Count,
+                    memberCount = competion.Members?.Count ?? 0,
                     date = competion.DateTime.ToShortDateString(),
                     time = competion.DateTime.ToShortTimeString(),
                     description = competion.Description,
                     exercise = competion.Exercise,
                     id = competion.Id.ToString(),
-                    organiser = $"{competion.Organization.FirstName} {competion.Organization.SecoundName}",
+                    organiser = competion.Organization != null
+                        ? $"{competion.Organization.FirstName} {competion.Organization.SecoundName}"
+                        : "Unknown", //
                     title = competion.Title,
                     venue = competion.Venue,
                 };
