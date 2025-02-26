@@ -47,35 +47,27 @@ namespace ShootingAcademy.Controllers
             try
             {
                 Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
-
-                User user = await _context.Users
-                    .Include(i => i.Courses)
-                    .FirstAsync(i => i.Id == userGuid);
-
-                List<MyCourseBannerType> courseBannerTypes = [];
-
                 Random rand = new();
 
-                foreach (var courseTicket in user.Courses)
+                var user = await _context.Users
+                    .Include(u => u.Courses)
+                    .ThenInclude(cm => cm.Course)
+                    .FirstAsync(u => u.Id == userGuid);
+
+                var courseBannerTypes = user.Courses
+                .Where(cm => history ? cm.IsClosed : !cm.IsClosed)
+                .Select(cm => new MyCourseBannerType
                 {
-                    Course course = await _context.Courses
-                                          .FirstAsync(i => i.Id == courseTicket.CourseId);
-
-                    if (!history && courseTicket.IsClosed)
-                        continue;
-
-                    courseBannerTypes.Add(new MyCourseBannerType()
-                    {
-                        completed_percent = rand.Next(0, 100),
-                        duration = course.Duration,
-                        finished_at = courseTicket.FinishedAt.ToString(),
-                        started_at = courseTicket.StartedAt.ToString(),
-                        id = course.Id.ToString(),
-                        is_closed = courseTicket.IsClosed,
-                        level = course.Level,
-                        title = course.Title
-                    });
-                }
+                    completed_percent = rand.Next(0, 100),
+                    duration = cm.Course.Duration,
+                    finished_at = cm.FinishedAt.ToString(),
+                    started_at = cm.StartedAt.ToString(),
+                    id = cm.Course.Id.ToString(),
+                    is_closed = cm.IsClosed,
+                    level = cm.Course.Level,
+                    title = cm.Course.Title
+                })
+                .ToList();
 
                 return Results.Json(courseBannerTypes);
             }
@@ -83,7 +75,6 @@ namespace ShootingAcademy.Controllers
             {
                 return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
             }
-
             catch (Exception err)
             {
                 return Results.Problem(err.Message, statusCode: 400);
@@ -95,69 +86,62 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                Guid cguid = Guid.Parse(id);
+                if (!Guid.TryParse(id, out Guid cguid))
+                    throw new BaseException("Invalid course ID format", 400);
 
-                Course course = await _context.Courses
-                    .Include(c => c.Instructor)
-                    .Include(c => c.Modules)
-                    .ThenInclude(m => m.Lessons)
-                    .Include(c => c.Faqs)
-                    .Include(c => c.Features)
-                    .FirstAsync(i => i.Id == cguid);
-
-                return Results.Json(new CourseModel()
-                {
-                    Id = course.Id.ToString(),
-                    category = course.Category,
-                    description = course.Description,
-                    duration = course.Duration,
-                    title = course.Title,
-                    is_closed = course.IsClosed,
-                    level = course.Level,
-                    peopleRateCount = course.PeopleRateCount,
-                    rate = course.Rate,
-
-                    instructor = FullUserModel.FromEntity(course.Instructor),
-
-                    modules = course.Modules.Select(module =>
+                var courseData = await _context.Courses
+                    .AsNoTracking()
+                    .Where(c => c.Id == cguid)
+                    .Select(course => new CourseModel
                     {
-                        return new ModuleModel()
-                        {
-                            id = module.Id.ToString(),
-                            title = module.Title,
-                            lessons = module.Lessons.Select(lesson =>
+                        Id = course.Id.ToString(),
+                        category = course.Category,
+                        description = course.Description,
+                        duration = course.Duration,
+                        title = course.Title,
+                        is_closed = course.IsClosed,
+                        level = course.Level,
+                        peopleRateCount = course.PeopleRateCount,
+                        rate = course.Rate,
+                        instructor = FullUserModel.FromEntity(course.Instructor),
+
+                        modules = course.Modules
+                            .Select(module => new ModuleModel
                             {
-                                return new LessonModel()
-                                {
-                                    id = lesson.Id.ToString(),
-                                    description = lesson.Description,
-                                    title = lesson.Title,
-                                    videoLink = lesson.VideoLink,
-                                };
+                                id = module.Id.ToString(),
+                                title = module.Title,
+                                lessons = module.Lessons
+                                    .Select(lesson => new LessonModel
+                                    {
+                                        id = lesson.Id.ToString(),
+                                        description = lesson.Description,
+                                        title = lesson.Title,
+                                        videoLink = lesson.VideoLink
+                                    }).ToList()
                             }).ToList(),
-                        };
-                    }).ToList(),
 
-                    faqs = course.Faqs.Select(faq =>
-                    {
-                        return new FraqModel()
-                        {
-                            id = faq.Id.ToString(),
-                            answer = faq.Answer,
-                            question = faq.Question,
-                        };
-                    }).ToList(),
+                        faqs = course.Faqs
+                            .Select(faq => new FraqModel
+                            {
+                                id = faq.Id.ToString(),
+                                answer = faq.Answer,
+                                question = faq.Question
+                            }).ToList(),
 
-                    features = course.Features.Select(feature =>
-                    {
-                        return new FeatureModel()
-                        {
-                            id = feature.Id.ToString(),
-                            description = feature.Description,
-                            title = feature.Title,
-                        };
-                    }).ToList()
-                });
+                        features = course.Features
+                            .Select(feature => new FeatureModel
+                            {
+                                id = feature.Id.ToString(),
+                                description = feature.Description,
+                                title = feature.Title
+                            }).ToList()
+                    })
+                    .FirstOrDefaultAsync();
+
+                if (courseData == null)
+                    throw new BaseException("Course not found", 404);
+
+                return Results.Json(courseData);
             }
             catch (BaseException exp)
             {
@@ -165,37 +149,37 @@ namespace ShootingAcademy.Controllers
             }
         }
 
+
         [HttpPost("subscribe"), Authorize]
         public async Task<IResult> SubscribeUser([FromQuery] string courseId)
         {
             try
             {
-                Guid cguid = Guid.Parse(courseId);
+                if (!Guid.TryParse(courseId, out Guid cguid))
+                    throw new BaseException("Invalid course ID format", 400);
 
                 Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
-                User user = await _context.Users
-                    .Include(i => i.Courses)
-                    .FirstAsync(i => i.Id == userGuid);
+                bool userAlreadySubscribed = await _context.CourseMembers
+                    .AnyAsync(cm => cm.CourseId == cguid && cm.UserId == userGuid);
 
-                foreach (var userCourse in user.Courses)
-                {
-                    if (userCourse.Id == cguid) throw new BaseException("The user is already on the course");
-                }
+                if (userAlreadySubscribed)
+                    throw new BaseException("The user is already on the course");
 
                 Course? course = await _context.Courses
-                    .FirstOrDefaultAsync(i => i.Id == cguid);
+                    .FirstOrDefaultAsync(c => c.Id == cguid);
 
-                if (course == null) throw new BaseException($"Could not find {courseId}");
+                if (course == null)
+                    throw new BaseException($"Could not find course with ID {courseId}");
 
-                _context.CourseMembers.Add(new CourseMember()
+                _context.CourseMembers.Add(new CourseMember
                 {
                     CourseId = cguid,
                     UserId = userGuid,
                     IsClosed = false,
-                    CompletedLessons = [],
+                    CompletedLessons = new List<Guid>(),
                     StartedAt = DateTime.UtcNow,
-                    FinishedAt = null,
+                    FinishedAt = null
                 });
 
                 await _context.SaveChangesAsync();
@@ -206,7 +190,6 @@ namespace ShootingAcademy.Controllers
             {
                 return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
             }
-
             catch (Exception err)
             {
                 return Results.Problem(err.Message, statusCode: 400);
