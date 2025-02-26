@@ -19,6 +19,6 @@ namespace ShootingAcademy.Models.Controllers.Course
 
         public List<ModuleModel>? modules { get; set; }
         public List<FeatureModel>? features { get; set; }
-        public List<FraqModel>? faqs { get; set; }
+        public List<FaqModel>? faqs { get; set; }
     }
 }

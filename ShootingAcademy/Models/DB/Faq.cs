@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ShootingAcademy.Models.DB
 {
-    public class Fraq
+    public class Faq
     {
         [Key]
         public Guid Id { get; set; }

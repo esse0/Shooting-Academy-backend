@@ -36,6 +36,6 @@ namespace ShootingAcademy.Models.DB
 
         public List<Feature> Features { get; set; } = [];
 
-        public List<Fraq> Faqs { get; set; } = [];
+        public List<Faq> Faqs { get; set; } = [];
     }
 }

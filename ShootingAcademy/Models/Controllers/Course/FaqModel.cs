@@ -1,6 +1,6 @@
 ﻿namespace ShootingAcademy.Models.Controllers.Course
 {
-    public class FraqModel
+    public class FaqModel
     {
         public string id { get; set; }
         public string question { get; set; }
