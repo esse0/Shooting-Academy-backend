@@ -58,24 +58,20 @@ namespace ShootingAcademy.Controllers
                 Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
                 User user = await _context.Users
-                    .Include(i => i.Competions)
-                    .FirstAsync(i => i.Id == userGuid);
+                    .Include(u => u.Competions)
+                    .ThenInclude(tc => tc.Competion)
+                    .ThenInclude(c => c.Organization)
+                    .Include(u => u.Competions)
+                    .ThenInclude(tc => tc.Competion.Members)
+                    .FirstAsync(u => u.Id == userGuid);
 
-                List<CompetionType> competionTypes = [];
-
-                foreach (var competionTicket in user.Competions)
-                {
-                    Competion competion = await _context.Competions
-                        .Include(com => com.Organization)
-                        .Include(com => com.Members)
-                        .FirstAsync(i => i.Id == competionTicket.CompetionId);
-
-                    if (!history && competion.Status == Competion.ActiveStatus.Ended)
-                        continue;
-
-                    competionTypes.Add(new CompetionType()
+                var competionTypes = user.Competions
+                    .Select(tc => tc.Competion)
+                    .Where(competion => history ? competion.Status == Competion.ActiveStatus.Ended
+                                                : competion.Status != Competion.ActiveStatus.Ended)
+                    .Select(competion => new CompetionType
                     {
-                        status = Enum.GetName(competion.Status),
+                        status = Enum.GetName(typeof(Competion.ActiveStatus), competion.Status),
                         city = competion.City,
                         country = competion.Country,
                         maxMebmerCount = competion.MaxMembersCount,
@@ -87,9 +83,9 @@ namespace ShootingAcademy.Controllers
                         id = competion.Id.ToString(),
                         organiser = $"{competion.Organization.FirstName} {competion.Organization.SecoundName}",
                         title = competion.Title,
-                        venue = competion.Venue,
-                    });
-                }
+                        venue = competion.Venue
+                    })
+                    .ToList();
 
                 return Results.Json(competionTypes);
             }
