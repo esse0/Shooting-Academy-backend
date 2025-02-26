@@ -48,7 +48,7 @@ namespace ShootingAcademy.Controllers
                     id = competion.Id.ToString(),
                     organiser = competion.Organization != null
                         ? $"{competion.Organization.FirstName} {competion.Organization.SecoundName}"
-                        : "Unknown", //
+                        : "Unknown",
                     title = competion.Title,
                     venue = competion.Venue,
                 };

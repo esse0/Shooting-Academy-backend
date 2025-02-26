@@ -195,5 +195,39 @@ namespace ShootingAcademy.Controllers
                 return Results.Problem(err.Message, statusCode: 400);
             }
         }
+
+
+        [HttpPost("leaveCourse"), Authorize]
+        public async Task<IResult> UnsubscribeUser([FromQuery] string courseId)
+        {
+            try
+            {
+                if (!Guid.TryParse(courseId, out Guid cguid))
+                    throw new BaseException("Invalid course ID format", 400);
+
+                Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var courseMember = await _context.CourseMembers
+                    .FirstOrDefaultAsync(cm => cm.CourseId == cguid && cm.UserId == userGuid);
+
+                if (courseMember == null)
+                    throw new BaseException("The user is not on the course", 404);
+
+                courseMember.IsClosed = true;
+                courseMember.FinishedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
     }
 }
