@@ -2,6 +2,7 @@
 
 services:
   server:
+    image: shooting_academy
     build:
       context: .
       dockerfile: ShootingAcademy/Dockerfile
