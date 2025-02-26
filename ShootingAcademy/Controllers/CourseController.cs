@@ -195,7 +195,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPost("leaveCourse"), Authorize]
+        [HttpPut("leaveCourse"), Authorize]
         public async Task<IResult> UnsubscribeUser([FromQuery] string courseId)
         {
             try
@@ -229,7 +229,7 @@ namespace ShootingAcademy.Controllers
         }
 
         //[HttpPost("CreateCourse"), Authorize]
-        //public async Task<IResult> CreateCourse([FromBody] )
+        //public async Task<IResult> CreateCourse([FromBody] CourseModel course)
         //{
 
         //}
