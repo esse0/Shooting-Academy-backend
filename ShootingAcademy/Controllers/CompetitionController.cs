@@ -149,7 +149,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPost("createCompetition"), Authorize(Roles = "organisator")]
+        [HttpPost("create"), Authorize(Roles = "organisator")]
         public async Task<IResult> CreateCompetition([FromBody] CompetionType competition)
         {
             try
@@ -214,7 +214,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpDelete("deleteCompetition"), Authorize(Roles = "organisator")]
+        [HttpDelete("delete"), Authorize(Roles = "organisator")]
         public async Task<IResult> DeleteCompetition([FromQuery] string competitionId)
         {
             try
@@ -227,7 +227,6 @@ namespace ShootingAcademy.Controllers
                 Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
                 var competition = await _context.Competitions
-                .Include(c => c.Members)
                 .FirstOrDefaultAsync(c => c.Id == competitionGuid);
 
                 if (competition == null)
