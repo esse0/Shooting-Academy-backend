@@ -2,6 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
+using ShootingAcademy.Models.Controllers.Competition;
 using ShootingAcademy.Models.Controllers.Course;
 using ShootingAcademy.Models.DB;
 using ShootingAcademy.Models.DB.ModelUser;
@@ -65,7 +66,8 @@ namespace ShootingAcademy.Controllers
                     id = cm.Course.Id.ToString(),
                     is_closed = cm.IsClosed,
                     level = cm.Course.Level,
-                    title = cm.Course.Title
+                    title = cm.Course.Title,
+                    category = cm.Course.Category,
                 })
                 .ToList();
 
@@ -228,7 +230,45 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPost("CreateCourse"), Authorize]
+
+        [HttpGet("organisator"), Authorize(Roles = "organisator")]
+        public async Task<IResult> GetOrganisatorCourses()
+        {
+            try
+            {
+                Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var courses = await _context.Courses
+                    .Where(c => c.InstructorId == userGuid)
+                    .Include(c => c.Modules) 
+                    .Include(c => c.Members)
+                    .AsNoTracking()
+                    .ToListAsync();
+                
+                var coursesType = courses.Select(c => new CourseModel()
+                {
+                    Id = c.Id.ToString(),
+                    category = c.Category,
+                    description = c.Description,
+                    duration = c.Duration,
+                    level = c.Level,
+                    rate = c.Rate,
+                    title = c.Title,
+                }).ToList();
+
+                return Results.Json(coursesType);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
+
+        [HttpPost("create"), Authorize("organisator")]
         public async Task<IResult> CreateCourse([FromBody] CourseModel course)
         {
             try
@@ -308,6 +348,47 @@ namespace ShootingAcademy.Controllers
                 await _context.SaveChangesAsync();
 
                 return Results.StatusCode(201);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 500);
+            }
+        }
+
+        [HttpDelete("delete"), Authorize(Roles = "organisator")]
+        public async Task<IResult> DeleteCourse([FromQuery] string courseId)
+        {
+            try
+            {
+                if (!Guid.TryParse(courseId, out Guid courseGuid))
+                {
+                    throw new BaseException("Invalid course ID format.", code: 400);
+                }
+
+                Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var course = await _context.Courses
+                .FirstOrDefaultAsync(c => c.Id == courseGuid);
+
+                if (course == null)
+                {
+                    throw new BaseException("Course not found.", code: 404);
+                }
+
+                if (course.InstructorId != userGuid)
+                {
+                    throw new BaseException("Unauthorized", code: 401);
+                }
+
+                _context.Courses.Remove(course);
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
             }
             catch (BaseException apperr)
             {
