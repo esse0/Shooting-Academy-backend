@@ -104,5 +104,62 @@ namespace ShootingAcademy.Controllers
                 return Results.Problem(err.Message, statusCode: 400);
             }
         }
+
+        [HttpPost("createCompetition"), Authorize]
+        public async Task<IResult> CreateCompetition([FromBody] CompetionType competition)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(competition.title) ||
+                    string.IsNullOrWhiteSpace(competition.description) ||
+                    string.IsNullOrWhiteSpace(competition.date) ||
+                    string.IsNullOrWhiteSpace(competition.time))
+                {
+                    throw new BaseException("Invalid input: required fields are missing.", 400);
+                }
+
+                if (competition.maxMebmerCount <= 0)
+                    throw new BaseException("Max member count must be greater than 0.", 400);
+
+                if (!DateTime.TryParse($"{competition.date} {competition.time}", out DateTime competitionDateTime))
+                    throw new BaseException("Invalid date or time format.", 400);
+
+                Guid organiserGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var organiser = await _context.Users.FirstOrDefaultAsync(u => u.Id == organiserGuid);
+
+                if (organiser == null)
+                    throw new BaseException("Organizer not found.", 404);
+
+                var newCompetition = new Competion
+                {
+                    Id = Guid.NewGuid(),
+                    Title = competition.title,
+                    Description = competition.description,
+                    DateTime = competitionDateTime,
+                    MaxMembersCount = competition.maxMebmerCount,
+                    Venue = competition.venue,
+                    City = competition.city,
+                    Country = competition.country,
+                    Status = Competion.ActiveStatus.Pending,
+                    Exercise = competition.exercise,
+                    OrganizationId = organiserGuid
+                };
+
+                _context.Competions.Add(newCompetition);
+                await _context.SaveChangesAsync();
+
+                return Results.Json(new { message = "Competition created successfully", id = newCompetition.Id });
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 500);
+            }
+        }
+
     }
 }

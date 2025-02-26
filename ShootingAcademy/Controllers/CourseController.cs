@@ -149,7 +149,6 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-
         [HttpPost("subscribe"), Authorize]
         public async Task<IResult> SubscribeUser([FromQuery] string courseId)
         {
@@ -196,7 +195,6 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-
         [HttpPost("leaveCourse"), Authorize]
         public async Task<IResult> UnsubscribeUser([FromQuery] string courseId)
         {
@@ -229,5 +227,11 @@ namespace ShootingAcademy.Controllers
                 return Results.Problem(err.Message, statusCode: 400);
             }
         }
+
+        //[HttpPost("CreateCourse"), Authorize]
+        //public async Task<IResult> CreateCourse([FromBody] )
+        //{
+
+        //}
     }
 }
