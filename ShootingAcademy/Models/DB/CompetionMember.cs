@@ -17,6 +17,6 @@ namespace ShootingAcademy.Models.DB
         [ForeignKey(nameof(AthleteId))]
         public User Athlete { get; set; }
 
-        public float Result { get; set; }
+        public float? Result { get; set; }
     }
 }

@@ -87,14 +87,14 @@ app.UseSwaggerUI();
 
 app.UseGetToken();
 
+app.UseAuthentication();
+app.UseAuthorization();
+
 app.MapControllers();
 app.UseStaticFiles();
 app.UseCors("Coors");
 
 app.UseSession();
-
-app.UseAuthentication();
-app.UseAuthorization();
 
 
 app.MapFallbackToFile("index.html");

@@ -34,7 +34,8 @@ namespace ShootingAcademy.Services
             var claims = new[]
             {
                 new Claim(JwtRegisteredClaimNames.NameId, user.Id.ToString()),
-                new Claim(JwtRegisteredClaimNames.Typ, user.Role),
+                //new Claim(JwtRegisteredClaimNames.Typ, user.Role),
+                new Claim(ClaimTypes.Role, user.Role),
                 new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
             };
 
@@ -68,7 +69,8 @@ namespace ShootingAcademy.Services
                 ValidIssuer = settings.Issuer,
                 ValidAudience = settings.Audience,
                 IssuerSigningKey = new SymmetricSecurityKey(key),
-                ClockSkew = TimeSpan.Zero
+                ClockSkew = TimeSpan.Zero,
+                RoleClaimType = ClaimTypes.Role
             };
         }
 

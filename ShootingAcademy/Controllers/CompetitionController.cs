@@ -25,7 +25,7 @@ namespace ShootingAcademy.Controllers
         [HttpGet]
         public async Task<IResult> Get()
         {
-            IEnumerable<Competion> Competions = await _context.Competions
+            IEnumerable<Competion> Competions = await _context.Competitions
                 .Where(i => i.Status != Competion.ActiveStatus.Ended)
                 .Include(c => c.Organization)
                 .Include(c => c.Members)
@@ -105,7 +105,51 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPut("createCompetition"), Authorize]
+
+        [HttpGet("organisator"), Authorize(Roles = "organisator")]
+        public async Task<IResult> GetOrganisatorCompetions()
+        {
+            try
+            {
+                Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var competitions = await _context.Competitions
+                    .Where(c => c.OrganizationId == userGuid)
+                    .Include(c => c.Organization)
+                    .Include(c => c.Members)
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var competitionTypes = competitions.Select(c => new CompetionType
+                {
+                    id = c.Id.ToString(),
+                    title = c.Title,
+                    description = c.Description,
+                    date = c.DateTime.ToLocalTime().ToString("yyyy-MM-dd"),
+                    time = c.DateTime.ToLocalTime().ToString("HH:mm"),
+                    maxMemberCount = c.MaxMembersCount,
+                    memberCount = c.Members.Count,
+                    venue = c.Venue,
+                    country = c.Country,
+                    city = c.City,
+                    exercise = c.Exercise,
+                    status = Enum.GetName(typeof(Competion.ActiveStatus), c.Status),
+                    organiser = $"{c.Organization.FirstName} {c.Organization.SecoundName}"
+                }).ToList();
+
+                return Results.Json(competitionTypes);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
+
+        [HttpPut("createCompetition"), Authorize(Roles = "organisator")]
         public async Task<IResult> CreateCompetition([FromBody] CompetionType competition)
         {
             try
@@ -154,11 +198,53 @@ namespace ShootingAcademy.Controllers
                     OrganizationId = organiserGuid
                 };
 
-                _context.Competions.Add(newCompetition);
+                _context.Competitions.Add(newCompetition);
 
                 await _context.SaveChangesAsync();
 
                 return Results.StatusCode(201);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 500);
+            }
+        }
+
+        [HttpDelete("deleteCompetition"), Authorize(Roles = "organisator")]
+        public async Task<IResult> DeleteCompetition([FromQuery] string competitionId)
+        {
+            try
+            {
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                {
+                    throw new BaseException("Invalid competition ID format.", code: 400);
+                }
+
+                Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var competition = await _context.Competitions
+                .Include(c => c.Members)
+                .FirstOrDefaultAsync(c => c.Id == competitionGuid);
+
+                if (competition == null)
+                {
+                    throw new BaseException("Competition not found.", code: 404);
+                }
+
+                if (competition.OrganizationId != userGuid)
+                {
+                    throw new BaseException("Unauthorized", code: 401);
+                }
+
+                _context.Competitions.Remove(competition);
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
             }
             catch (BaseException apperr)
             {

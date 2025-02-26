@@ -7,7 +7,7 @@
         public string description { get; set; }
         public string date { get; set; }
         public string time { get; set; }
-        public int memberCount { get; set; }
+        public int? memberCount { get; set; }
         public int maxMemberCount { get; set; }
         public string venue {  get; set; }
         public string city { get; set; }
