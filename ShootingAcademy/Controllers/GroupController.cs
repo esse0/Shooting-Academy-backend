@@ -18,40 +18,40 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpGet]
-        public async Task<IResult> Get()
-        {
+        //public async Task<IResult> Get()
+        //{
 
-        }
+        //}
 
-        [HttpGet("organisator"), Authorize(Roles = "coach")]
-        public async Task<IResult> GetCoachGroups()
-        {
+        //[HttpGet("organisator"), Authorize(Roles = "coach")]
+        //public async Task<IResult> GetCoachGroups()
+        //{
 
-        }
+        //}
 
-        [HttpPost("addmember"), Authorize(Roles = "coach")]
-        public async Task<IResult> AddMember([FromQuery] string groupId, [FromQuery] string userId)
-        {
+        //[HttpPost("addmember"), Authorize(Roles = "coach")]
+        //public async Task<IResult> AddMember([FromQuery] string groupId, [FromQuery] string userId)
+        //{
 
-        }
+        //}
 
-        [HttpPost("kickmember"), Authorize(Roles = "coach")]
-        public async Task<IResult> KickMember([FromQuery] string groupId, [FromQuery] string userId)
-        {
+        //[HttpPost("kickmember"), Authorize(Roles = "coach")]
+        //public async Task<IResult> KickMember([FromQuery] string groupId, [FromQuery] string userId)
+        //{
 
-        }
+        //}
 
-        [HttpPost("create"), Authorize(Roles = "coach")]
-        public async Task<IResult> CreateGroup([FromBody] CompetionType group)
-        {
+        //[HttpPost("create"), Authorize(Roles = "coach")]
+        //public async Task<IResult> CreateGroup([FromBody] CompetionType group)
+        //{
 
-        }
+        //}
 
 
-        [HttpDelete("delete"), Authorize(Roles = "coach")]
-        public async Task<IResult> DeleteGroup([FromQuery] string groupId)
-        {
+        //[HttpDelete("delete"), Authorize(Roles = "coach")]
+        //public async Task<IResult> DeleteGroup([FromQuery] string groupId)
+        //{
 
-        }
+        //}
     }
 }
