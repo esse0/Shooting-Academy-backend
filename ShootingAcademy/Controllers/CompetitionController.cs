@@ -105,7 +105,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPost("createCompetition"), Authorize]
+        [HttpPut("createCompetition"), Authorize]
         public async Task<IResult> CreateCompetition([FromBody] CompetionType competition)
         {
             try
