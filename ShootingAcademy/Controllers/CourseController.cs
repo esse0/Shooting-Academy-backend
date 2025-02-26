@@ -231,8 +231,8 @@ namespace ShootingAcademy.Controllers
         }
 
 
-        [HttpGet("organisator"), Authorize(Roles = "organisator")]
-        public async Task<IResult> GetOrganisatorCourses()
+        [HttpGet("admin"), Authorize(Roles = "organisator")] //сменить на admin
+        public async Task<IResult> GetAdminCourses()
         {
             try
             {
@@ -268,7 +268,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPost("create"), Authorize("organisator")]
+        [HttpPost("create"), Authorize("organisator")] //сменить на admin
         public async Task<IResult> CreateCourse([FromBody] CourseModel course)
         {
             try
@@ -357,9 +357,9 @@ namespace ShootingAcademy.Controllers
             {
                 return Results.Problem(err.Message, statusCode: 500);
             }
-        }
+        } 
 
-        [HttpDelete("delete"), Authorize(Roles = "organisator")]
+        [HttpDelete("delete"), Authorize(Roles = "organisator")] //сменить на admin
         public async Task<IResult> DeleteCourse([FromQuery] string courseId)
         {
             try
