@@ -147,9 +147,10 @@ namespace ShootingAcademy.Controllers
                 };
 
                 _context.Competions.Add(newCompetition);
+
                 await _context.SaveChangesAsync();
 
-                return Results.Json(new { message = "Competition created successfully", id = newCompetition.Id });
+                return Results.StatusCode(201);
             }
             catch (BaseException apperr)
             {

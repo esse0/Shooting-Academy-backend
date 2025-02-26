@@ -121,7 +121,7 @@ namespace ShootingAcademy.Controllers
                             }).ToList(),
 
                         faqs = course.Faqs
-                            .Select(faq => new FraqModel
+                            .Select(faq => new FaqModel
                             {
                                 id = faq.Id.ToString(),
                                 answer = faq.Answer,
@@ -228,10 +228,96 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        //[HttpPost("CreateCourse"), Authorize]
-        //public async Task<IResult> CreateCourse([FromBody] CourseModel course)
-        //{
+        [HttpPost("CreateCourse"), Authorize]
+        public async Task<IResult> CreateCourse([FromBody] CourseModel course)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(course.title) ||
+                    string.IsNullOrWhiteSpace(course.description) ||
+                    string.IsNullOrWhiteSpace(course.duration))
+                {
+                    throw new BaseException("Invalid input: required fields are missing.", 400);
+                }
 
-        //}
+                Guid instructorId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                bool courseExists = await _context.Courses
+                    .AsNoTracking()
+                    .AnyAsync(c => c.Title == course.title && c.InstructorId == instructorId);
+
+                if (courseExists)
+                    throw new BaseException("A course with this title already exists.", 409);
+
+                var newCourse = new Course
+                {
+                    Id = Guid.NewGuid(),
+                    Title = course.title,
+                    Description = course.description,
+                    Duration = course.duration,
+                    Level = course.level ?? "Beginner",
+                    Category = course.category ?? "General",
+                    IsClosed = course.is_closed ?? false,
+                    InstructorId = instructorId,
+                    Rate = course.rate,
+                    PeopleRateCount = course.peopleRateCount ?? 0
+                };
+
+                if (course.modules != null && course.modules.Any())
+                {
+                    newCourse.Modules = course.modules.Select(m => new Module
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = m.title,
+                        CourseId = newCourse.Id,
+                        Lessons = m.lessons?.Select(l => new Lesson
+                        {
+                            Id = Guid.NewGuid(),
+                            Title = l.title,
+                            Description = l.description,
+                            VideoLink = l.videoLink,
+                            ModuleId = Guid.NewGuid()
+                        }).ToList() ?? new List<Lesson>()
+                    }).ToList();
+                }
+
+                if (course.faqs != null && course.faqs.Any())
+                {
+                    newCourse.Faqs = course.faqs.Select(f => new Faq
+                    {
+                        Id = Guid.NewGuid(),
+                        Question = f.question,
+                        Answer = f.answer,
+                        CourseId = newCourse.Id
+                    }).ToList();
+                }
+
+                if (course.features != null && course.features.Any())
+                {
+                    newCourse.Features = course.features.Select(f => new Feature
+                    {
+                        Id = Guid.NewGuid(),
+                        Title = f.title,
+                        Description = f.description,
+                        CourseId = newCourse.Id
+                    }).ToList();
+                }
+
+                _context.Courses.Add(newCourse);
+
+                await _context.SaveChangesAsync();
+
+                return Results.StatusCode(201);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 500);
+            }
+        }
+
     }
 }
