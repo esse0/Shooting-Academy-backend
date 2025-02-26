@@ -10,7 +10,7 @@ namespace ShootingAcademy.Models
         public DbSet<Course> Courses { get; set; }
         public DbSet<AthleteGroup> AthleteGroups { get; set; }
         public DbSet<Feature> Features { get; set; }
-        public DbSet<Fraq> Fraqs { get; set; }
+        public DbSet<Faq> Faqs { get; set; }
         public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Module> Modules { get; set; }

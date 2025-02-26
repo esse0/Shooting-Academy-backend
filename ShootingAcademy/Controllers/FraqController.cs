@@ -7,12 +7,12 @@ using ShootingAcademy.Models.Exceptions;
 
 namespace ShootingAcademy.Controllers
 {
-    public class FraqController : ControllerBase
+    public class FaqController : ControllerBase
     {
         private readonly IConfiguration _configuration;
         private readonly ApplicationDbContext _context;
 
-        public FraqController(IConfiguration configuration, ApplicationDbContext context)
+        public FaqController(IConfiguration configuration, ApplicationDbContext context)
         {
             _configuration = configuration;
             _context = context;
@@ -23,7 +23,7 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                IEnumerable<Fraq> Fraqs = await _context.Fraqs.AsNoTracking().ToListAsync();
+                IEnumerable<Faq> Faqs = await _context.Faqs.AsNoTracking().ToListAsync();
 
                 return Results.Ok(new FeatureResponse()
                 {
