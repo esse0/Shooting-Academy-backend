@@ -149,7 +149,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPut("createCompetition"), Authorize(Roles = "organisator")]
+        [HttpPost("createCompetition"), Authorize(Roles = "organisator")]
         public async Task<IResult> CreateCompetition([FromBody] CompetionType competition)
         {
             try
