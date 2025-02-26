@@ -41,8 +41,8 @@ namespace ShootingAcademy.Controllers
                     country = competion.Country,
                     maxMemberCount = competion.MaxMembersCount,
                     memberCount = competion.Members?.Count ?? 0,
-                    date = competion.DateTime.ToShortDateString(),
-                    time = competion.DateTime.ToShortTimeString(),
+                    date = competion.DateTime.ToLocalTime().ToShortDateString(),
+                    time = competion.DateTime.ToLocalTime().ToShortTimeString(),
                     description = competion.Description,
                     exercise = competion.Exercise,
                     id = competion.Id.ToString(),
@@ -81,8 +81,8 @@ namespace ShootingAcademy.Controllers
                         country = competion.Country,
                         maxMemberCount = competion.MaxMembersCount,
                         memberCount = competion.Members.Count,
-                        date = competion.DateTime.ToShortDateString(),
-                        time = competion.DateTime.ToShortTimeString(),
+                        date = competion.DateTime.ToLocalTime().ToShortDateString(),
+                        time = competion.DateTime.ToLocalTime().ToShortTimeString(),
                         description = competion.Description,
                         exercise = competion.Exercise,
                         id = competion.Id.ToString(),
@@ -121,8 +121,16 @@ namespace ShootingAcademy.Controllers
                 if (competition.maxMemberCount <= 0)
                     throw new BaseException($"Max member count must be greater than 0.", 400);
 
-                if (!DateTime.TryParse($"{competition.date} {competition.time}", out DateTime competitionDateTime))
-                    throw new BaseException("Invalid date or time format.", 400);
+                if(!DateTime.TryParse(competition.date, out DateTime competitionDate))
+                    throw new BaseException("Invalid date or date format.", 400);
+
+                if (!DateTime.TryParse(competition.time, out DateTime competitionTime))
+                    throw new BaseException("Invalid time format.", 400);
+
+                competitionDate = DateTime.SpecifyKind(competitionDate, DateTimeKind.Utc);
+                competitionTime = DateTime.SpecifyKind(competitionTime, DateTimeKind.Utc);
+
+                var competitionDateTime = competitionDate.Add(competitionTime.TimeOfDay);
 
                 Guid organiserGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
