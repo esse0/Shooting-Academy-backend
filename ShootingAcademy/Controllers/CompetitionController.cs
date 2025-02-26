@@ -161,6 +161,5 @@ namespace ShootingAcademy.Controllers
                 return Results.Problem(err.Message, statusCode: 500);
             }
         }
-
     }
 }
