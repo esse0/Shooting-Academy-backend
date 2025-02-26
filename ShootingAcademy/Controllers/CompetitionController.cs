@@ -118,8 +118,8 @@ namespace ShootingAcademy.Controllers
                     throw new BaseException("Invalid input: required fields are missing.", 400);
                 }
 
-                if (competition.maxMebmerCount <= 0)
-                    throw new BaseException("Max member count must be greater than 0.", 400);
+                if (competition.maxMemberCount <= 0)
+                    throw new BaseException($"Max member count must be greater than 0.", 400);
 
                 if (!DateTime.TryParse($"{competition.date} {competition.time}", out DateTime competitionDateTime))
                     throw new BaseException("Invalid date or time format.", 400);
@@ -137,7 +137,7 @@ namespace ShootingAcademy.Controllers
                     Title = competition.title,
                     Description = competition.description,
                     DateTime = competitionDateTime,
-                    MaxMembersCount = competition.maxMebmerCount,
+                    MaxMembersCount = competition.maxMemberCount,
                     Venue = competition.venue,
                     City = competition.city,
                     Country = competition.country,
