@@ -271,6 +271,8 @@ namespace ShootingAcademy.Controllers
         [HttpPost("create"), Authorize("organisator")] //сменить на admin
         public async Task<IResult> CreateCourse([FromBody] CourseModel course)
         {
+            Random random = new Random();
+
             try
             {
                 if (string.IsNullOrWhiteSpace(course.title) ||
@@ -289,6 +291,8 @@ namespace ShootingAcademy.Controllers
                 if (courseExists)
                     throw new BaseException("A course with this title already exists.", 409);
 
+                int randomNumber = random.Next(10, 501);
+
                 var newCourse = new Course
                 {
                     Id = Guid.NewGuid(),
@@ -300,7 +304,7 @@ namespace ShootingAcademy.Controllers
                     IsClosed = course.is_closed ?? false,
                     InstructorId = instructorId,
                     Rate = course.rate,
-                    PeopleRateCount = course.peopleRateCount ?? 0
+                    PeopleRateCount = randomNumber
                 };
 
                 if (course.modules != null && course.modules.Any())
@@ -315,8 +319,7 @@ namespace ShootingAcademy.Controllers
                             Id = Guid.NewGuid(),
                             Title = l.title,
                             Description = l.description,
-                            VideoLink = l.videoLink,
-                            ModuleId = Guid.NewGuid()
+                            VideoLink = l.videoLink
                         }).ToList() ?? new List<Lesson>()
                     }).ToList();
                 }
