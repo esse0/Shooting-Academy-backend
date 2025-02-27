@@ -1,6 +1,6 @@
 ﻿namespace ShootingAcademy.Models.Controllers.Competition
 {
-    public class CompetitionMember
+    public class CompetitionMemberResponse
     {
         public string id;
         public string fullName;

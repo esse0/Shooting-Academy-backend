@@ -33,7 +33,7 @@ namespace ShootingAcademy.Controllers
 
             return Results.Json(Competitions.Select(competition =>
             {
-                return new CompetitionType
+                return new CompetitionTypeResponse
                 {
                     status = Enum.GetName(typeof(Competition.ActiveStatus), competition.Status),
                     city = competition.City,
@@ -72,7 +72,7 @@ namespace ShootingAcademy.Controllers
                     throw new BaseException("Competition not found", 404);
                 }
 
-                var competitionDetails = new CompetitionType
+                var competitionDetails = new CompetitionTypeResponse
                 {
                     id = competition.Id.ToString(),
                     title = competition.Title,
@@ -89,7 +89,7 @@ namespace ShootingAcademy.Controllers
                     organiser = competition.Organisation != null
                         ? $"{competition.Organisation.FirstName} {competition.Organisation.SecoundName}"
                         : "Unknown",
-                    members = competition.Members.Select(m => new Models.Controllers.Competition.CompetitionMember
+                    members = competition.Members.Select(m => new Models.Controllers.Competition.CompetitionMemberResponse
                     {
                         id = m.Id.ToString(),
                         fullName = $"{m.Athlete.FirstName} {m.Athlete.SecoundName}",
@@ -128,7 +128,7 @@ namespace ShootingAcademy.Controllers
                     .Select(tc => tc.Competition)
                     .Where(competition => history ? competition.Status == Competition.ActiveStatus.Ended
                                                 : competition.Status != Competition.ActiveStatus.Ended)
-                    .Select(competition => new CompetitionType
+                    .Select(competition => new CompetitionTypeResponse
                     {
                         status = Enum.GetName(typeof(Competition.ActiveStatus), competition.Status),
                         city = competition.City,
@@ -174,7 +174,7 @@ namespace ShootingAcademy.Controllers
                     .AsNoTracking()
                     .ToListAsync();
 
-                var competitionTypes = competitions.Select(c => new CompetitionType
+                var competitionTypes = competitions.Select(c => new CompetitionTypeResponse
                 {
                     id = c.Id.ToString(),
                     title = c.Title,
@@ -204,7 +204,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPost("create"), Authorize(Roles = "organisator")]
-        public async Task<IResult> CreateCompetition([FromBody] CompetitionType competition)
+        public async Task<IResult> CreateCompetition([FromBody] CompetitionTypeResponse competition)
         {
             try
             {

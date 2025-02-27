@@ -2,7 +2,7 @@
 
 namespace ShootingAcademy.Models.Controllers.Competition
 {
-    public class CompetitionType
+    public class CompetitionTypeResponse
     {
         public string? id {  get; set; }
         public string title { get; set; }
@@ -17,6 +17,6 @@ namespace ShootingAcademy.Models.Controllers.Competition
         public string? status { get; set; }
         public string exercise { get; set; }
         public string? organiser { get; set; }
-        public List<CompetitionMember>? members { get; set; }
+        public List<CompetitionMemberResponse>? members { get; set; }
     }
 }
