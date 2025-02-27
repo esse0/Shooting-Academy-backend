@@ -52,20 +52,7 @@ namespace ShootingAcademy.Controllers
 
                 await dbContext.SaveChangesAsync();
 
-                return Results.Json(new FullUserModel()
-                {
-                    Id = user.Id,
-                    FirstName = user.FirstName,
-                    SecoundName = user.SecoundName,
-                    PatronymicName = user.PatronymicName,
-                    Email = user.Email,
-                    Age = user.Age,
-                    City = user.City,
-                    Country = user.Country,
-                    Address = user.Address,
-                    Grade = user.Grade,
-                    Role = user.Role,
-                });
+                return Results.Json(FullUserModel.FromEntity(user));
             }
             catch (BaseException exp)
             {
