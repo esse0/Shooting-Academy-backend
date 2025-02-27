@@ -268,7 +268,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPost("create"), Authorize("organisator")] //сменить на admin
+        [HttpPost("create"), Authorize(Roles = "organisator")] //сменить на admin
         public async Task<IResult> CreateCourse([FromBody] CourseModel course)
         {
             Random random = new Random();

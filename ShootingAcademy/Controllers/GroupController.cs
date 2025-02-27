@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models;
 using ShootingAcademy.Models.Controllers.AthleteGroup;
+using ShootingAcademy.Models.Controllers.Group;
 using ShootingAcademy.Models.DB;
 using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Models.Exceptions;
@@ -63,7 +64,7 @@ namespace ShootingAcademy.Controllers
             }
             catch (Exception err)
             {
-                return Results.Problem(err.Message, statusCode: 400);
+                return Results.Problem(err.Message, statusCode: 500);
             }
         }
 
@@ -155,7 +156,7 @@ namespace ShootingAcademy.Controllers
             }
             catch (Exception err)
             {
-                return Results.Problem(err.Message, statusCode: 400);
+                return Results.Problem(err.Message, statusCode: 500);
             }
         }
 
@@ -227,7 +228,7 @@ namespace ShootingAcademy.Controllers
             }
             catch (Exception err)
             {
-                return Results.Problem(err.Message, statusCode: 400);
+                return Results.Problem(err.Message, statusCode: 500);
             }
         }
 
@@ -298,7 +299,7 @@ namespace ShootingAcademy.Controllers
             }
             catch (Exception err)
             {
-                return Results.Problem(err.Message, statusCode: 400);
+                return Results.Problem(err.Message, statusCode: 500);
             }
         }
 
@@ -355,22 +356,91 @@ namespace ShootingAcademy.Controllers
             }
             catch (Exception err)
             {
-                return Results.Problem(err.Message, statusCode: 400);
+                return Results.Problem(err.Message, statusCode: 500);
             }
         }
 
 
-        //[HttpPost("kickmember"), Authorize(Roles = "coach")]
-        //public async Task<IResult> KickMember([FromQuery] string groupId, [FromQuery] string userId)
-        //{
+        [HttpPost("kickmember"), Authorize(Roles = "coach")]
+        public async Task<IResult> KickMember([FromQuery] string groupId, [FromQuery] string userId)
+        {
+            try
+            {
+                if (!Guid.TryParse(groupId, out Guid groupGuid) || !Guid.TryParse(userId, out Guid userGuid))
+                {
+                    throw new BaseException("Invalid group ID or user ID format.", code: 400);
+                }
 
-        //}
+                Guid coachGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
-        //[HttpPost("create"), Authorize(Roles = "coach")]
-        //public async Task<IResult> CreateGroup([FromBody] CompetionType group)
-        //{
+                var group = await _context.AthleteGroups
+                    .Include(g => g.Athletes)
+                    .FirstOrDefaultAsync(g => g.Id == groupGuid && g.CoachId == coachGuid);
 
-        //}
+                if (group == null)
+                {
+                    throw new BaseException("Group not found or you don't have permission to modify it.", code: 404);
+                }
+
+                var member = await _context.GroupMembers.FirstOrDefaultAsync(m => m.AthleteGroupId == groupGuid && m.AthleteId == userGuid);
+
+                if (member == null)
+                {
+                    throw new BaseException("User is not a member of this group.", code: 404);
+                }
+
+                _context.GroupMembers.Remove(member);
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 500);
+            }
+        }
+
+
+        [HttpPost("create"), Authorize(Roles = "coach")]
+        public async Task<IResult> CreateGroup([FromBody] GroupModel group)
+        {
+            try
+            {
+                if (string.IsNullOrWhiteSpace(group.OrganizationName))
+                {
+                    throw new BaseException("Organization name is required.", code: 400);
+                }
+
+                Guid coachGuid = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var newGroup = new AthleteGroup
+                {
+                    Id = Guid.NewGuid(),
+                    CoachId = coachGuid,
+                    OrganizationName = group.OrganizationName,
+                    Athletes = new List<GroupMember>()
+                };
+
+                _context.AthleteGroups.Add(newGroup);
+
+                await _context.SaveChangesAsync();
+
+                return Results.Created();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 500);
+            }
+        }
 
 
         [HttpDelete("delete"), Authorize(Roles = "coach")]
@@ -406,7 +476,7 @@ namespace ShootingAcademy.Controllers
             }
             catch (Exception err)
             {
-                return Results.Problem(err.Message, statusCode: 400);
+                return Results.Problem(err.Message, statusCode: 500);
             }
         }
     };
