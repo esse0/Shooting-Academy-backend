@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Authorization;
 using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Services;
 using ShootingAcademy.Models.Controllers.Competition;
+using System.Text;
+using System.Text.Json;
 
 namespace ShootingAcademy.Controllers
 {
@@ -16,9 +18,16 @@ namespace ShootingAcademy.Controllers
     {
         private readonly ApplicationDbContext _context;
 
+        private readonly JsonSerializerOptions _jsonSerializerOptions;
+
         public CompetitionController(ApplicationDbContext context)
         {
             _context = context;
+
+            _jsonSerializerOptions = new JsonSerializerOptions()
+            {
+                IncludeFields = true
+            };
         }
 
         [HttpGet]
@@ -325,7 +334,7 @@ namespace ShootingAcademy.Controllers
                     throw new BaseException("Invalid competition ID format.", code: 400);
                 }
 
-                if (!Guid.TryParse(competitionId, out Guid userGuid))
+                if (!Guid.TryParse(userId, out Guid userGuid))
                 {
                     throw new BaseException("Invalid user ID format.", code: 400);
                 }
@@ -382,6 +391,50 @@ namespace ShootingAcademy.Controllers
             catch (Exception ex)
             {
                 return Results.Problem(ex.Message, statusCode: 400);
+            }
+        }
+
+        [HttpGet("export"), Authorize(Roles = "organisator")]
+        public async Task<IResult> ExportMembers([FromQuery] string competitionId)
+        {
+            try
+            {
+                Guid userId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var user = await _context.Users.FindAsync(userId);
+
+                var competion = await _context.Competitions
+                    .Include(c => c.Members)
+                    .ThenInclude(c => c.Athlete)
+                    .FirstOrDefaultAsync(c => c.Id == Guid.Parse(competitionId))
+                    ?? throw new BaseException("Competion not be found!", 404);
+
+                if (competion.OrganisationId != userId)
+                    throw new BaseException("Competion is not yours!", 403);
+
+                if (competion.Members.Count <= 0)
+                    throw new BaseException("Competion have zero members!");
+
+                var members = competion.Members.Select(m =>
+                {
+                    return new CompetitionMemberResponse()
+                    {
+                        age = m.Athlete.Age,
+                        fullName = $"{m.Athlete.FirstName} {m.Athlete.SecoundName}",
+                        country = m.Athlete.Country,
+                        grade = m.Athlete.Grade,
+                        id = m.Athlete.Id.ToString(),
+                        result = m.Result
+                    };
+                });
+
+                string json = JsonSerializer.Serialize(members, _jsonSerializerOptions);
+
+                return Results.File(Encoding.UTF8.GetBytes(json), fileDownloadName: $"{competion.Title}_Members.json");
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
             }
         }
 
