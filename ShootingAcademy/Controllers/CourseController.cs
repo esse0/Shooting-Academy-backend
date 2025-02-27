@@ -309,6 +309,18 @@ namespace ShootingAcademy.Controllers
                     PeopleRateCount = randomNumber
                 };
 
+                if(course.modules == null || course.modules.Count == 0)
+                {
+                    throw new BaseException("Modules is empty", 400);
+                }
+
+                foreach (var module in course.modules) {
+                    if (module.lessons == null || module.lessons.Count == 0)
+                    {
+                        throw new BaseException("Modules is empty", 400);
+                    }
+                }
+
                 if (course.modules != null && course.modules.Any())
                 {
                     newCourse.Modules = course.modules.Select((m, moduleIndex) => new Module
