@@ -222,7 +222,6 @@ namespace ShootingAcademy.Controllers
                 if (competition.maxMemberCount <= 0)
                     throw new BaseException($"Max member count must be greater than 0.", 400);
 
-                competition.date = competition.date.Remove(competition.date.IndexOf('T'));
 
                 if (!DateTime.TryParse(competition.date, out DateTime competitionDate))
                     throw new BaseException("Invalid date or date format.", 400);
