@@ -9,7 +9,7 @@ namespace ShootingAcademy.Models.Controllers.Group
 
         public Guid? CoachId { get; set; }
 
-        public string OrganizationName { get; set; }
+        public string OrganisationName { get; set; }
 
         public List<GroupMember>? Athletes { get; set; } = [];
     }

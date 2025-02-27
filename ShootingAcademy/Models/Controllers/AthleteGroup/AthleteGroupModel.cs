@@ -5,7 +5,7 @@ namespace ShootingAcademy.Models.Controllers.AthleteGroup
     public class AthleteGroupModel
     {
         public string id { get; set; }
-        public string OrganizationName { get; set; }
+        public string organisationName { get; set; }
 
         public FullUserModel coach { get; set; }
 

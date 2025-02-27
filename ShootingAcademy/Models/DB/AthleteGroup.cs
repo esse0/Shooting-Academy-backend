@@ -11,7 +11,7 @@ namespace ShootingAcademy.Models.DB
 
         public Guid CoachId { get; set; }
 
-        public string OrganizationName { get; set; }
+        public string OrganisationName { get; set; }
 
         [ForeignKey(nameof(CoachId))]
         public User Coach { get; set; }

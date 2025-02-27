@@ -39,7 +39,7 @@ namespace ShootingAcademy.Controllers
                 var result = athleteGroups.Select(group => new AthleteGroupModel
                 {
                     id = group.Id.ToString(),
-                    OrganizationName = group.OrganizationName,
+                    organisationName = group.OrganisationName,
                     coach = new FullUserModel
                     {
                         Id = group.Coach.Id,
@@ -85,7 +85,7 @@ namespace ShootingAcademy.Controllers
                 var result = athleteGroups.Select(group => new AthleteGroupModel
                 {
                     id = group.Id.ToString(),
-                    OrganizationName = group.OrganizationName,
+                    organisationName = group.OrganisationName,
                     coach = new FullUserModel
                     {
                         Id = group.Coach.Id,
@@ -131,7 +131,7 @@ namespace ShootingAcademy.Controllers
                 var result = athleteGroups.Select(group => new AthleteGroupModel
                 {
                     id = group.Id.ToString(),
-                    OrganizationName = group.OrganizationName,
+                    organisationName = group.OrganisationName,
                     coach = new FullUserModel
                     {
                         Id = group.Coach.Id,
@@ -189,7 +189,7 @@ namespace ShootingAcademy.Controllers
                 var result = new AthleteGroupModel
                 {
                     id = group.Id.ToString(),
-                    OrganizationName = group.OrganizationName,
+                    organisationName = group.OrganisationName,
                     coach = new FullUserModel
                     {
                         Id = group.Coach.Id,
@@ -260,7 +260,7 @@ namespace ShootingAcademy.Controllers
                 var result = new AthleteGroupModel
                 {
                     id = group.Id.ToString(),
-                    OrganizationName = group.OrganizationName,
+                    organisationName = group.OrganisationName,
                     coach = new FullUserModel
                     {
                         Id = group.Coach.Id,
@@ -411,7 +411,7 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                if (string.IsNullOrWhiteSpace(group.OrganizationName))
+                if (string.IsNullOrWhiteSpace(group.OrganisationName))
                 {
                     throw new BaseException("Organization name is required.", code: 400);
                 }
@@ -422,7 +422,7 @@ namespace ShootingAcademy.Controllers
                 {
                     Id = Guid.NewGuid(),
                     CoachId = coachGuid,
-                    OrganizationName = group.OrganizationName,
+                    OrganisationName = group.OrganisationName,
                     Athletes = new List<GroupMember>()
                 };
 

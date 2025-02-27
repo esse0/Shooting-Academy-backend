@@ -72,5 +72,30 @@ namespace ShootingAcademy.Controllers
                 return Results.Json(exp.GetModel(), statusCode: exp.Code);
             }
         }
+
+        [HttpGet, Authorize(Roles = "admin")]
+        public async Task<IResult> GetUsers()
+        {
+            try
+            {
+                var users = await dbContext.Users
+                    .Where(u => u.Role != "admin")
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var result = users.Select(FullUserModel.FromEntity).ToList();
+
+                return Results.Json(result);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
+
     }
 }
