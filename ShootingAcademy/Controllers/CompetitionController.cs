@@ -345,6 +345,11 @@ namespace ShootingAcademy.Controllers
                     throw new BaseException("Competition not found", 404);
                 }
 
+                if (competition.Members.Count == competition.MaxMembersCount)
+                {
+                    throw new BaseException("Competition is full", 400);
+                }
+
                 var athleteGroups = await _context.AthleteGroups
                     .Include(g => g.Athletes)
                     .Where(g => g.CoachId == coachId)
