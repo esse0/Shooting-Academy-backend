@@ -9,12 +9,12 @@ namespace ShootingAcademy.Models.DB
         [Key]
         public Guid Id { get; set; }
 
-        public Guid CoatchId { get; set; }
-        [ForeignKey(nameof(CoatchId))]
+        public Guid CoachId { get; set; }
 
         public string OrganizationName { get; set; }
 
-        public User Coatch { get; set; }
+        [ForeignKey(nameof(CoachId))]
+        public User Coach { get; set; }
 
         public List<GroupMember> Athletes { get; set; } = [];
     }
