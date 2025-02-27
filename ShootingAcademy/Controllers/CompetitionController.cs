@@ -24,74 +24,129 @@ namespace ShootingAcademy.Controllers
         [HttpGet]
         public async Task<IResult> Get()
         {
-            IEnumerable<Competion> Competions = await _context.Competitions
-                .Where(i => i.Status != Competion.ActiveStatus.Ended)
-                .Include(c => c.Organization)
+            IEnumerable<Competition> Competitions = await _context.Competitions
+                .Where(i => i.Status != Competition.ActiveStatus.Ended)
+                .Include(c => c.Organisation)
                 .Include(c => c.Members)
                 .AsNoTracking()
                 .ToListAsync();
 
-            return Results.Json(Competions.Select(competion =>
+            return Results.Json(Competitions.Select(competition =>
             {
-                return new CompetionType
+                return new CompetitionType
                 {
-                    status = Enum.GetName(typeof(Competion.ActiveStatus), competion.Status),
-                    city = competion.City,
-                    country = competion.Country,
-                    maxMemberCount = competion.MaxMembersCount,
-                    memberCount = competion.Members?.Count ?? 0,
-                    date = competion.DateTime.ToLocalTime().ToShortDateString(),
-                    time = competion.DateTime.ToLocalTime().ToShortTimeString(),
-                    description = competion.Description,
-                    exercise = competion.Exercise,
-                    id = competion.Id.ToString(),
-                    organiser = competion.Organization != null
-                        ? $"{competion.Organization.FirstName} {competion.Organization.SecoundName}"
+                    status = Enum.GetName(typeof(Competition.ActiveStatus), competition.Status),
+                    city = competition.City,
+                    country = competition.Country,
+                    maxMemberCount = competition.MaxMembersCount,
+                    memberCount = competition.Members?.Count ?? 0,
+                    date = competition.DateTime.ToLocalTime().ToShortDateString(),
+                    time = competition.DateTime.ToLocalTime().ToShortTimeString(),
+                    description = competition.Description,
+                    exercise = competition.Exercise,
+                    id = competition.Id.ToString(),
+                    organiser = competition.Organisation != null
+                        ? $"{competition.Organisation.FirstName} {competition.Organisation.SecoundName}"
                         : "Unknown",
-                    title = competion.Title,
-                    venue = competion.Venue,
+                    title = competition.Title,
+                    venue = competition.Venue,
                 };
             }));
         }
 
+        [HttpGet("fulldata")]
+        public async Task<IResult> GetCompetitionById([FromQuery] string competitionId)
+        {
+            try
+            {
+                var competitionGuid = Guid.Parse(competitionId);
+
+                var competition = await _context.Competitions
+                    .Include(c => c.Organisation) // Включаем организацию
+                    .Include(c => c.Members)      // Включаем участников
+                    .ThenInclude(m => m.Athlete)  // Включаем информацию о спортсменах (если у вас есть такая модель)
+                    .FirstOrDefaultAsync(c => c.Id == competitionGuid);
+
+                if (competition == null)
+                {
+                    throw new BaseException("Competition not found", 404);
+                }
+
+                var competitionDetails = new CompetitionType
+                {
+                    id = competition.Id.ToString(),
+                    title = competition.Title,
+                    description = competition.Description,
+                    date = competition.DateTime.ToLocalTime().ToShortDateString(),
+                    time = competition.DateTime.ToLocalTime().ToShortTimeString(),
+                    maxMemberCount = competition.MaxMembersCount,
+                    memberCount = competition.Members.Count,
+                    venue = competition.Venue,
+                    country = competition.Country,
+                    city = competition.City,
+                    exercise = competition.Exercise,
+                    status = Enum.GetName(typeof(Competition.ActiveStatus), competition.Status),
+                    organiser = competition.Organisation != null
+                        ? $"{competition.Organisation.FirstName} {competition.Organisation.SecoundName}"
+                        : "Unknown",
+                    members = competition.Members.Select(m => new Models.Controllers.Competition.CompetitionMember
+                    {
+                        id = m.Id.ToString(),
+                        fullName = $"{m.Athlete.FirstName} {m.Athlete.SecoundName}",
+                        age = m.Athlete.Age,
+                        country = m.Athlete.Country,
+                        grade = m.Athlete.Grade,
+                        result = m.Result
+                    }).ToList()
+                };
+
+                return Results.Json(competitionDetails);
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message, statusCode: 400);
+            }
+        }
+
+
         [HttpGet("user"), Authorize]
-        public async Task<IResult> GetUserCompetions([FromQuery] bool history = false)
+        public async Task<IResult> GetUserCompetitions([FromQuery] bool history = false)
         {
             try
             {
                 Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
                 User user = await _context.Users
-                    .Include(u => u.Competions)
-                    .ThenInclude(tc => tc.Competion)
-                    .ThenInclude(c => c.Organization)
-                    .Include(u => u.Competions)
-                    .ThenInclude(tc => tc.Competion.Members)
+                    .Include(u => u.Competitions)
+                    .ThenInclude(tc => tc.Competition)
+                    .ThenInclude(c => c.Organisation)
+                    .Include(u => u.Competitions)
+                    .ThenInclude(tc => tc.Competition.Members)
                     .FirstAsync(u => u.Id == userGuid);
 
-                var competionTypes = user.Competions
-                    .Select(tc => tc.Competion)
-                    .Where(competion => history ? competion.Status == Competion.ActiveStatus.Ended
-                                                : competion.Status != Competion.ActiveStatus.Ended)
-                    .Select(competion => new CompetionType
+                var competitionTypes = user.Competitions
+                    .Select(tc => tc.Competition)
+                    .Where(competition => history ? competition.Status == Competition.ActiveStatus.Ended
+                                                : competition.Status != Competition.ActiveStatus.Ended)
+                    .Select(competition => new CompetitionType
                     {
-                        status = Enum.GetName(typeof(Competion.ActiveStatus), competion.Status),
-                        city = competion.City,
-                        country = competion.Country,
-                        maxMemberCount = competion.MaxMembersCount,
-                        memberCount = competion.Members.Count,
-                        date = competion.DateTime.ToLocalTime().ToShortDateString(),
-                        time = competion.DateTime.ToLocalTime().ToShortTimeString(),
-                        description = competion.Description,
-                        exercise = competion.Exercise,
-                        id = competion.Id.ToString(),
-                        organiser = $"{competion.Organization.FirstName} {competion.Organization.SecoundName}",
-                        title = competion.Title,
-                        venue = competion.Venue
+                        status = Enum.GetName(typeof(Competition.ActiveStatus), competition.Status),
+                        city = competition.City,
+                        country = competition.Country,
+                        maxMemberCount = competition.MaxMembersCount,
+                        memberCount = competition.Members.Count,
+                        date = competition.DateTime.ToLocalTime().ToShortDateString(),
+                        time = competition.DateTime.ToLocalTime().ToShortTimeString(),
+                        description = competition.Description,
+                        exercise = competition.Exercise,
+                        id = competition.Id.ToString(),
+                        organiser = $"{competition.Organisation.FirstName} {competition.Organisation.SecoundName}",
+                        title = competition.Title,
+                        venue = competition.Venue
                     })
                     .ToList();
 
-                return Results.Json(competionTypes);
+                return Results.Json(competitionTypes);
             }
             catch (BaseException apperr)
             {
@@ -106,20 +161,20 @@ namespace ShootingAcademy.Controllers
 
 
         [HttpGet("organisator"), Authorize(Roles = "organisator")]
-        public async Task<IResult> GetOrganisatorCompetions()
+        public async Task<IResult> GetOrganisatorCompetitions()
         {
             try
             {
                 Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
                 var competitions = await _context.Competitions
-                    .Where(c => c.OrganizationId == userGuid)
-                    .Include(c => c.Organization)
+                    .Where(c => c.OrganisationId == userGuid)
+                    .Include(c => c.Organisation)
                     .Include(c => c.Members)
                     .AsNoTracking()
                     .ToListAsync();
 
-                var competitionTypes = competitions.Select(c => new CompetionType
+                var competitionTypes = competitions.Select(c => new CompetitionType
                 {
                     id = c.Id.ToString(),
                     title = c.Title,
@@ -132,8 +187,8 @@ namespace ShootingAcademy.Controllers
                     country = c.Country,
                     city = c.City,
                     exercise = c.Exercise,
-                    status = Enum.GetName(typeof(Competion.ActiveStatus), c.Status),
-                    organiser = $"{c.Organization.FirstName} {c.Organization.SecoundName}"
+                    status = Enum.GetName(typeof(Competition.ActiveStatus), c.Status),
+                    organiser = $"{c.Organisation.FirstName} {c.Organisation.SecoundName}"
                 }).ToList();
 
                 return Results.Json(competitionTypes);
@@ -149,7 +204,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpPost("create"), Authorize(Roles = "organisator")]
-        public async Task<IResult> CreateCompetition([FromBody] CompetionType competition)
+        public async Task<IResult> CreateCompetition([FromBody] CompetitionType competition)
         {
             try
             {
@@ -182,7 +237,7 @@ namespace ShootingAcademy.Controllers
                 if (organiser == null)
                     throw new BaseException("Organizer not found.", 404);
 
-                var newCompetition = new Competion
+                var newCompetition = new Competition
                 {
                     Id = Guid.NewGuid(),
                     Title = competition.title,
@@ -192,9 +247,9 @@ namespace ShootingAcademy.Controllers
                     Venue = competition.venue,
                     City = competition.city,
                     Country = competition.country,
-                    Status = Competion.ActiveStatus.Pending,
+                    Status = Competition.ActiveStatus.Pending,
                     Exercise = competition.exercise,
-                    OrganizationId = organiserGuid
+                    OrganisationId = organiserGuid
                 };
 
                 _context.Competitions.Add(newCompetition);
@@ -233,7 +288,7 @@ namespace ShootingAcademy.Controllers
                     throw new BaseException("Competition not found.", code: 404);
                 }
 
-                if (competition.OrganizationId != userGuid)
+                if (competition.OrganisationId != userGuid)
                 {
                     throw new BaseException("Unauthorized", code: 401);
                 }

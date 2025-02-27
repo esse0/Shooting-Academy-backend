@@ -428,7 +428,7 @@ namespace ShootingAcademy.Controllers
             {
                 if (string.IsNullOrWhiteSpace(group.OrganisationName))
                 {
-                    throw new BaseException("Organization name is required.", code: 400);
+                    throw new BaseException("Organisation name is required.", code: 400);
                 }
 
                 Guid coachGuid = AutorizeData.FromContext(HttpContext).UserGuid;

@@ -4,7 +4,7 @@ using ShootingAcademy.Models.DB.ModelUser;
 
 namespace ShootingAcademy.Models.DB
 {
-    public class Competion
+    public class Competition
     {
         public enum ActiveStatus
         {
@@ -30,12 +30,12 @@ namespace ShootingAcademy.Models.DB
         public string Exercise { get; set; }
 
         [Required]
-        public Guid OrganizationId { get; set; }
-        [ForeignKey(nameof(OrganizationId))]
-        public User Organization { get; set; }
+        public Guid OrganisationId { get; set; }
+        [ForeignKey(nameof(OrganisationId))]
+        public User Organisation { get; set; }
 
         public ActiveStatus Status { get; set; }
 
-        public List<User> Members { get; set; } = [];
+        public List<CompetitionMember> Members { get; set; } = [];
     }
 }

@@ -14,8 +14,8 @@ namespace ShootingAcademy.Models
         public DbSet<GroupMember> GroupMembers { get; set; }
         public DbSet<Lesson> Lessons { get; set; }
         public DbSet<Module> Modules { get; set; }
-        public DbSet<Competion> Competitions { get; set; }
-        public DbSet<CompetionMember> CompetitionMembers { get; set; }
+        public DbSet<Competition> Competitions { get; set; }
+        public DbSet<CompetitionMember> CompetitionMembers { get; set; }
         public DbSet<CourseMember> CourseMembers { get; set; }
 
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options) : base(options)

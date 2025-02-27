@@ -1,6 +1,8 @@
-﻿namespace ShootingAcademy.Models.Controllers.Competition
+﻿using ShootingAcademy.Models.DB.ModelUser;
+
+namespace ShootingAcademy.Models.Controllers.Competition
 {
-    public class CompetionType
+    public class CompetitionType
     {
         public string? id {  get; set; }
         public string title { get; set; }
@@ -15,5 +17,6 @@
         public string? status { get; set; }
         public string exercise { get; set; }
         public string? organiser { get; set; }
+        public List<CompetitionMember>? members { get; set; }
     }
 }
