@@ -4,14 +4,14 @@ using ShootingAcademy.Models.DB.ModelUser;
 
 namespace ShootingAcademy.Models.DB
 {
-    public class CompetionMember
+    public class CompetitionMember
     {
         [Key]
         public Guid Id { get; set; }
 
-        public Guid CompetionId { get; set; }
-        [ForeignKey(nameof(CompetionId))]
-        public Competion Competion { get; set; }
+        public Guid CompetitionId { get; set; }
+        [ForeignKey(nameof(CompetitionId))]
+        public Competition Competition { get; set; }
 
         public Guid AthleteId { get; set; }
         [ForeignKey(nameof(AthleteId))]
