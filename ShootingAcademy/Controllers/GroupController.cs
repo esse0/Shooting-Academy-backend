@@ -500,7 +500,10 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                var groupGuid = Guid.Parse(groupId);
+                if (!Guid.TryParse(groupId, out Guid groupGuid))
+                {
+                    throw new BaseException("Invalid group ID format.", code: 400);
+                }
 
                 var users = await _context.Users
                     .Where(u => u.Role == "athlete")

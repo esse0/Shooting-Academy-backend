@@ -59,7 +59,10 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                var competitionGuid = Guid.Parse(competitionId);
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                {
+                    throw new BaseException("Invalid competition ID format.", code: 400);
+                }
 
                 var competition = await _context.Competitions
                     .Include(c => c.Organisation)
@@ -308,5 +311,84 @@ namespace ShootingAcademy.Controllers
                 return Results.Problem(err.Message, statusCode: 500);
             }
         }
+
+        [HttpPost("addmember"), Authorize(Roles = "coach")]
+        public async Task<IResult> AddMemberCompetition([FromQuery] string competitionId, [FromQuery] string userId)
+        {
+            try
+            {
+                Guid coachId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                {
+                    throw new BaseException("Invalid competition ID format.", code: 400);
+                }
+
+                if (!Guid.TryParse(competitionId, out Guid userGuid))
+                {
+                    throw new BaseException("Invalid user ID format.", code: 400);
+                }
+
+                var user = await _context.Users.FindAsync(userGuid);
+
+                if (user == null)
+                {
+                    throw new BaseException("User not found", code: 404);
+                }
+
+                var competition = await _context.Competitions
+                   .Include(c => c.Members)
+                   .FirstOrDefaultAsync(c => c.Id == competitionGuid);
+
+                if (competition == null)
+                {
+                    throw new BaseException("Competition not found", 404);
+                }
+
+                var athleteGroups = await _context.AthleteGroups
+                    .Include(g => g.Athletes)
+                    .Where(g => g.CoachId == coachId)
+                    .ToListAsync();
+
+                var userIsInAnyGroup = athleteGroups
+                    .Any(g => g.Athletes.Any(a => a.AthleteId == userGuid));
+
+                if (!userIsInAnyGroup)
+                {
+                    throw new BaseException("User is not part of any of your groups", 400);
+                }
+
+                var userAlreadyInCompetition = competition.Members.Any(m => m.AthleteId.ToString() == userId);
+
+                if (userAlreadyInCompetition)
+                {
+                    throw new BaseException("User is already part of the competition", 400);
+                }
+
+                var competitionMember = new CompetitionMember
+                {
+                    CompetitionId = competitionGuid,
+                    AthleteId = user.Id,
+                    Result = null
+                };
+
+                competition.Members.Add(competitionMember);
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (Exception ex)
+            {
+                return Results.Problem(ex.Message, statusCode: 400);
+            }
+        }
+
+
+        //[HttpDelete("deletemember"), Authorize(Roles = "coach")]
+        //public async Task<IResult> DeleteMemberCompetition([FromQuery] string competitionId, [FromQuery] string userId)
+        //{
+
+        //}
     }
 }
