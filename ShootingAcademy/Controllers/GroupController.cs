@@ -177,6 +177,7 @@ namespace ShootingAcademy.Controllers
                     .Where(g => g.Id == groupGuid)
                     .Include(g => g.Coach)
                     .Include(g => g.Athletes)
+                    .ThenInclude(a => a.Athlete)
                     .Where(g => g.Athletes.Any(a => a.AthleteId == userGuid))
                     .AsNoTracking()
                     .FirstOrDefaultAsync();
@@ -196,28 +197,31 @@ namespace ShootingAcademy.Controllers
                         FirstName = group.Coach.FirstName,
                         SecoundName = group.Coach.SecoundName,
                         Email = group.Coach.Email,
-                        PatronymicName = group.Coach.PatronymicName,
+                        PatronymicName = group.Coach.PatronymicName ?? "",
                         Age = group.Coach.Age,
-                        Grade = group.Coach.Grade,
-                        Country = group.Coach.Country,
-                        City = group.Coach.City,
-                        Address = group.Coach.Address,
+                        Grade = group.Coach.Grade ?? "",
+                        Country = group.Coach.Country ?? "",
+                        City = group.Coach.City ?? "",
+                        Address = group.Coach.Address ?? "",
                         Role = group.Coach.Role
                     },
-                    members = group.Athletes.Select(a => new FullUserModel
+                    members = group.Athletes?
+                    .Where(a => a.Athlete != null)
+                    .Select(a => new FullUserModel
                     {
                         Id = a.Athlete.Id,
                         FirstName = a.Athlete.FirstName,
                         SecoundName = a.Athlete.SecoundName,
                         Email = a.Athlete.Email,
-                        PatronymicName = a.Athlete.PatronymicName,
+                        PatronymicName = a.Athlete.PatronymicName ?? "",
                         Age = a.Athlete.Age,
-                        Grade = a.Athlete.Grade,
-                        Country = a.Athlete.Country,
-                        City = a.Athlete.City,
-                        Address = a.Athlete.Address,
+                        Grade = a.Athlete.Grade ?? "",
+                        Country = a.Athlete.Country ?? "",
+                        City = a.Athlete.City ?? "",
+                        Address = a.Athlete.Address ?? "",
                         Role = a.Athlete.Role
-                    }).ToList()
+                    })
+                    .ToList() ?? new List<FullUserModel>()
                 };
 
                 return Results.Json(result);
@@ -249,6 +253,7 @@ namespace ShootingAcademy.Controllers
                     .Include(g => g.Coach)
                     .Where(g => g.CoachId == userGuid)
                     .Include(g => g.Athletes)
+                    .ThenInclude(a => a.Athlete)
                     .AsNoTracking()
                     .FirstOrDefaultAsync();
 
@@ -267,28 +272,31 @@ namespace ShootingAcademy.Controllers
                         FirstName = group.Coach.FirstName,
                         SecoundName = group.Coach.SecoundName,
                         Email = group.Coach.Email,
-                        PatronymicName = group.Coach.PatronymicName,
+                        PatronymicName = group.Coach.PatronymicName ?? "",
                         Age = group.Coach.Age,
-                        Grade = group.Coach.Grade,
-                        Country = group.Coach.Country,
-                        City = group.Coach.City,
-                        Address = group.Coach.Address,
+                        Grade = group.Coach.Grade ?? "",
+                        Country = group.Coach.Country ?? "",
+                        City = group.Coach.City ?? "",
+                        Address = group.Coach.Address ?? "",
                         Role = group.Coach.Role
                     },
-                    members = group.Athletes.Select(a => new FullUserModel
+                    members = group.Athletes?
+                    .Where(a => a.Athlete != null)
+                    .Select(a => new FullUserModel
                     {
                         Id = a.Athlete.Id,
                         FirstName = a.Athlete.FirstName,
                         SecoundName = a.Athlete.SecoundName,
                         Email = a.Athlete.Email,
-                        PatronymicName = a.Athlete.PatronymicName,
+                        PatronymicName = a.Athlete.PatronymicName ?? "",
                         Age = a.Athlete.Age,
-                        Grade = a.Athlete.Grade,
-                        Country = a.Athlete.Country,
-                        City = a.Athlete.City,
-                        Address = a.Athlete.Address,
+                        Grade = a.Athlete.Grade ?? "",
+                        Country = a.Athlete.Country ?? "",
+                        City = a.Athlete.City ?? "",
+                        Address = a.Athlete.Address ?? "",
                         Role = a.Athlete.Role
-                    }).ToList()
+                    })
+                    .ToList() ?? new List<FullUserModel>()
                 };
 
                 return Results.Json(result);
@@ -305,11 +313,11 @@ namespace ShootingAcademy.Controllers
 
 
         [HttpPost("addmember"), Authorize(Roles = "coach")]
-        public async Task<IResult> AddMember([FromQuery] string groupId, [FromQuery] string userId)
+        public async Task<IResult> AddMember([FromQuery] MemberData data)
         {
             try
             {
-                if (!Guid.TryParse(groupId, out Guid groupGuid) || !Guid.TryParse(userId, out Guid userGuid))
+                if (!Guid.TryParse(data.groupId, out Guid groupGuid) || !Guid.TryParse(data.userId, out Guid userGuid))
                 {
                     throw new BaseException("Invalid group ID or user ID format.", code: 400);
                 }
@@ -344,11 +352,12 @@ namespace ShootingAcademy.Controllers
                     AthleteId = userGuid
                 };
 
+                group.Athletes.Add(groupMember);
                 _context.GroupMembers.Add(groupMember);
 
                 await _context.SaveChangesAsync();
 
-                return Results.Ok();
+                return Results.Created();
             }
             catch (BaseException apperr)
             {
@@ -362,11 +371,11 @@ namespace ShootingAcademy.Controllers
 
 
         [HttpPost("kickmember"), Authorize(Roles = "coach")]
-        public async Task<IResult> KickMember([FromQuery] string groupId, [FromQuery] string userId)
+        public async Task<IResult> KickMember([FromQuery] MemberData data)
         {
             try
             {
-                if (!Guid.TryParse(groupId, out Guid groupGuid) || !Guid.TryParse(userId, out Guid userGuid))
+                if (!Guid.TryParse(data.groupId, out Guid groupGuid) || !Guid.TryParse(data.userId, out Guid userGuid))
                 {
                     throw new BaseException("Invalid group ID or user ID format.", code: 400);
                 }
@@ -389,6 +398,7 @@ namespace ShootingAcademy.Controllers
                     throw new BaseException("User is not a member of this group.", code: 404);
                 }
 
+                group.Athletes.Remove(member);
                 _context.GroupMembers.Remove(member);
 
                 await _context.SaveChangesAsync();
@@ -477,6 +487,40 @@ namespace ShootingAcademy.Controllers
             catch (Exception err)
             {
                 return Results.Problem(err.Message, statusCode: 500);
+            }
+        }
+
+        [HttpGet("unsubscribedathletes"), Authorize(Roles = "coach")]
+        public async Task<IResult> GetUsersWithoutMembers([FromQuery] string groupId)
+        {
+            try
+            {
+                var groupGuid = Guid.Parse(groupId);
+
+                var users = await _context.Users
+                    .Where(u => u.Role == "athlete")
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var groupMembers = await _context.GroupMembers
+                    .Where(gm => gm.AthleteGroupId == groupGuid)
+                    .Select(gm => gm.AthleteId)
+                    .ToListAsync();
+
+                var filteredUsers = users
+                    .Where(u => !groupMembers.Contains(u.Id))
+                    .Select(FullUserModel.FromEntity)
+                    .ToList();
+
+                return Results.Json(filteredUsers);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
             }
         }
     };

@@ -16,7 +16,7 @@ namespace ShootingAcademy.Models.DB
 
         [Required]
         public Guid AthleteGroupId { get; set; }
-        [ForeignKey(nameof(AthleteId))]
+        [ForeignKey(nameof(AthleteGroupId))]
         public AthleteGroup AthleteGroup { get; set; }
     }
 }
