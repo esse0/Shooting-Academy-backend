@@ -40,8 +40,8 @@ namespace ShootingAcademy.Controllers
                     country = competition.Country,
                     maxMemberCount = competition.MaxMembersCount,
                     memberCount = competition.Members?.Count ?? 0,
-                    date = competition.DateTime.ToLocalTime().ToShortDateString(),
-                    time = competition.DateTime.ToLocalTime().ToShortTimeString(),
+                    date = competition.DateTime.ToUniversalTime().ToString("yyyy-MM-dd"),
+                    time = competition.DateTime.ToUniversalTime().ToString("HH:mm"),
                     description = competition.Description,
                     exercise = competition.Exercise,
                     id = competition.Id.ToString(),
@@ -77,8 +77,8 @@ namespace ShootingAcademy.Controllers
                     id = competition.Id.ToString(),
                     title = competition.Title,
                     description = competition.Description,
-                    date = competition.DateTime.ToLocalTime().ToShortDateString(),
-                    time = competition.DateTime.ToLocalTime().ToShortTimeString(),
+                    date = competition.DateTime.ToUniversalTime().ToString("yyyy-MM-dd"),
+                    time = competition.DateTime.ToUniversalTime().ToString("HH:mm"),
                     maxMemberCount = competition.MaxMembersCount,
                     memberCount = competition.Members.Count,
                     venue = competition.Venue,
@@ -135,8 +135,8 @@ namespace ShootingAcademy.Controllers
                         country = competition.Country,
                         maxMemberCount = competition.MaxMembersCount,
                         memberCount = competition.Members.Count,
-                        date = competition.DateTime.ToLocalTime().ToShortDateString(),
-                        time = competition.DateTime.ToLocalTime().ToShortTimeString(),
+                        date = competition.DateTime.ToUniversalTime().ToString("yyyy-MM-dd"),
+                        time = competition.DateTime.ToUniversalTime().ToString("HH:mm"),
                         description = competition.Description,
                         exercise = competition.Exercise,
                         id = competition.Id.ToString(),
@@ -179,8 +179,8 @@ namespace ShootingAcademy.Controllers
                     id = c.Id.ToString(),
                     title = c.Title,
                     description = c.Description,
-                    date = c.DateTime.ToLocalTime().ToString("yyyy-MM-dd"),
-                    time = c.DateTime.ToLocalTime().ToString("HH:mm"),
+                    date = c.DateTime.ToUniversalTime().ToString("yyyy-MM-dd"),
+                    time = c.DateTime.ToUniversalTime().ToString("HH:mm"),
                     maxMemberCount = c.MaxMembersCount,
                     memberCount = c.Members.Count,
                     venue = c.Venue,
@@ -219,16 +219,17 @@ namespace ShootingAcademy.Controllers
                 if (competition.maxMemberCount <= 0)
                     throw new BaseException($"Max member count must be greater than 0.", 400);
 
-                if(!DateTime.TryParse(competition.date, out DateTime competitionDate))
+                competition.date = competition.date.Remove(competition.date.IndexOf('T'));
+
+                if (!DateTime.TryParse(competition.date, out DateTime competitionDate))
                     throw new BaseException("Invalid date or date format.", 400);
 
                 if (!DateTime.TryParse(competition.time, out DateTime competitionTime))
                     throw new BaseException("Invalid time format.", 400);
 
-                competitionDate = DateTime.SpecifyKind(competitionDate, DateTimeKind.Utc);
-                competitionTime = DateTime.SpecifyKind(competitionTime, DateTimeKind.Utc);
-
                 var competitionDateTime = competitionDate.Add(competitionTime.TimeOfDay);
+
+                competitionDateTime = competitionDateTime.ToUniversalTime();
 
                 Guid organiserGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
