@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Authorization;
 using ShootingAcademy.Models.DB.ModelUser;
 using ShootingAcademy.Services;
 using ShootingAcademy.Models.Controllers.Competition;
-using ShootingAcademy.Models.Controllers.Course;
 
 namespace ShootingAcademy.Controllers
 {

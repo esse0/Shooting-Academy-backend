@@ -340,6 +340,11 @@ namespace ShootingAcademy.Controllers
                     throw new BaseException("User not found.", code: 404);
                 }
 
+                if (user.Role != "athlete")
+                {
+                    throw new BaseException("Don't have premission to add coaches", code: 400);
+                }
+
                 if (group.Athletes.Any(a => a.AthleteId == userGuid))
                 {
                     throw new BaseException("User is already a member of this group.", code: 400);

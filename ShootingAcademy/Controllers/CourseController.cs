@@ -167,13 +167,13 @@ namespace ShootingAcademy.Controllers
                     .AnyAsync(cm => cm.CourseId == cguid && cm.UserId == userGuid);
 
                 if (userAlreadySubscribed)
-                    throw new BaseException("The user is already on the course");
+                    throw new BaseException("The user is already on the course", 400);
 
                 Course? course = await _context.Courses
                     .FirstOrDefaultAsync(c => c.Id == cguid);
 
                 if (course == null)
-                    throw new BaseException($"Could not find course with ID {courseId}");
+                    throw new BaseException($"Could not find course with ID {courseId}", 404);
 
                 _context.CourseMembers.Add(new CourseMember
                 {

@@ -43,10 +43,10 @@ namespace ShootingAcademy.Controllers
                 user.SecoundName = profileData.LastName;
                 user.Address = profileData.Address;
                 user.City = profileData.City;
+                user.Country = profileData.Country;
                 user.Grade = profileData.Grade;
                 user.Age = profileData.Age;
                 user.Email = profileData.Email;
-                user.Age = profileData.Age;
 
                 dbContext.Users.Update(user);
 
@@ -71,9 +71,13 @@ namespace ShootingAcademy.Controllers
             {
                 return Results.Json(exp.GetModel(), statusCode: exp.Code);
             }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
         }
 
-        [HttpGet, Authorize(Roles = "admin")]
+        [HttpGet("get"), Authorize(Roles = "admin")]
         public async Task<IResult> GetUsersWithoutAdmin()
         {
             try
@@ -86,6 +90,43 @@ namespace ShootingAcademy.Controllers
                 var result = users.Select(FullUserModel.FromEntity).ToList();
 
                 return Results.Json(result);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
+
+        [HttpPost("changerole"), Authorize(Roles = "admin")]
+        public async Task<IResult> ChangeUserRole([FromQuery] string userId, [FromQuery] string newRole)
+        {
+            try
+            {
+                if (newRole != "athlete" || newRole == "admin" || newRole != "moderator" || newRole != "coach" || newRole != "organisation")
+                {
+                    throw new BaseException("Role not supported", 400);
+                }
+                var user = await dbContext.Users.FindAsync(Guid.Parse(userId));
+
+                if (user == null)
+                {
+                    throw new BaseException("User not found", 404);
+                }
+
+                if (user.Role == "admin" && newRole != "admin")
+                {
+                    throw new BaseException("Cannot change administrator role", 400);
+                }
+
+                user.Role = newRole;
+
+                await dbContext.SaveChangesAsync();
+
+                return Results.Ok();
             }
             catch (BaseException apperr)
             {
