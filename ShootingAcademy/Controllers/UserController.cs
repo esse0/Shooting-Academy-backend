@@ -106,22 +106,16 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                string[] allowedRoles = ["athlete", "moderator", "coach", "organisation"];
+                string[] allowedRoles = ["athlete", "moderator", "coach", "organisator"];
 
                 if (!allowedRoles.Any(role => role == newRole))
                     throw new BaseException("Role not supported", 400);
 
-                var user = await dbContext.Users.FindAsync(Guid.Parse(userId));
-
-                if (user == null)
-                {
-                    throw new BaseException("User not found", 404);
-                }
+                var user = await dbContext.Users.FindAsync(Guid.Parse(userId)) 
+                                 ?? throw new BaseException("User not found", 404);
 
                 if (user.Role == "admin" && newRole != "admin")
-                {
                     throw new BaseException("Cannot change administrator role", 400);
-                }
 
                 user.Role = newRole;
 
