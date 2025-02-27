@@ -7,6 +7,7 @@ using ShootingAcademy.Models;
 using ShootingAcademy.Services;
 using Microsoft.EntityFrameworkCore;
 using ShootingAcademy.Models.Controllers.Analytic;
+using static ShootingAcademy.Models.DB.Competition;
 
 namespace ShootingAcademy.Controllers
 {
@@ -21,25 +22,6 @@ namespace ShootingAcademy.Controllers
             this.dbContext = dbContext;
         }
 
-        private Dictionary<string, float?> GetScoreByMonth(List<CompetitionMember> competitions)
-        {
-            Dictionary<string, float?> scoreByMonth = new Dictionary<string, float?>();
-
-            foreach (CompetitionMember item in competitions)
-            {
-                DateTime date = item.Competition.DateTime;
-                string month = date.ToString("MMMM");
-
-                if (scoreByMonth.ContainsKey(month))
-                {
-                    scoreByMonth.Add(month, item.Result);
-                }
-                else scoreByMonth[month] += item.Result;
-            }
-
-            return scoreByMonth;
-        }
-
 
         [HttpGet, Authorize]
         public async Task<IResult> GetAnalitics()
@@ -48,30 +30,57 @@ namespace ShootingAcademy.Controllers
             {
                 Guid userGuid = AutorizeData.FromContext(HttpContext).UserGuid;
 
-                User user = await dbContext.Users.Include(usr => usr.Courses)
-                    .Include(usr => usr.Competitions).FirstAsync(usr => usr.Id == userGuid);
+                User user = await dbContext.Users
+                .Include(usr => usr.Courses)
+                    .ThenInclude(course => course.Course)
+                    .ThenInclude(course => course.Modules)
+                    .ThenInclude(module => module.Lessons)
+                .Include(usr => usr.Competitions)
+                    .ThenInclude(competition => competition.Competition)
+                .FirstAsync(usr => usr.Id == userGuid);
 
-                var lessonsCount = user.Courses.Select(x => x.CompletedLessons).ToList().Count;
+                var completedCoursesCount = user.Courses.Count(x => x.IsClosed == true);
+                var completedLessonsCount = user.Courses
+                    .Where(el => el.IsClosed)
+                    .SelectMany(course => course.Course.Modules)
+                    .SelectMany(module => module.Lessons)
+                    .Count();
 
-                var courseIds = user.Courses.Where(x => x.IsClosed).Select(x => x.CourseId);
+                var completedCompetitionsCount = user.Competitions.Where(competition => competition.Competition.Status == ActiveStatus.Ended).Count();
 
-                var coursesByCategory = await dbContext.Courses.
-                    Where(x => courseIds.Contains(x.Id)).Select(x => x.Category).ToListAsync();
+                var coursesByCategory = user.Courses
+                    .Select(course => course.Course)
+                    .GroupBy(course => course.Category)
+                    .Select((group, i) => new CourseByCategory
+                    {
+                        Id = i,
+                        label = group.Key,
+                        value = group.Count() 
+                    })
+                    .ToList();
 
-                var competitionIds = user.Competitions.Select(x => x.Id);
-
-                var competitions = await dbContext.Competitions.
-                    Where(x => competitionIds.Contains(x.Id) && x.Status == Competition.ActiveStatus.Ended).ToListAsync();
-
-                var scoreByMonth = GetScoreByMonth(user.Competitions);
-
+                var scoreByMonth = new StatisticHorizontalBar
+                {
+                    dataset = user.Competitions
+                        .Where(c => c.Competition.Status == Competition.ActiveStatus.Ended)
+                        .SelectMany(c => c.Competition.Members)
+                        .Where(cm => cm.AthleteId == user.Id && cm.Result.HasValue) 
+                        .GroupBy(cm => cm.Competition.DateTime.ToString("yyyy-MM"))
+                        .Select(group => new StatisticByWeaphon
+                        {
+                            month = group.Key,
+                            avgresult = (int)group.Average(cm => cm.Result.Value)
+                        })
+                        .ToList()
+                };
 
                 return Results.Json(new AnalyticResponse()
                 {
-                    lessonsCount = lessonsCount,
+                    completedCoursesCount = completedCoursesCount,
+                    completedLessonsCount = completedLessonsCount,
+                    completedCompetitions = completedCompetitionsCount,
                     coursesByCategory = coursesByCategory,
-                    competitions = competitions,
-                    scoreByMonth = scoreByMonth,
+                    scoreByMonth = scoreByMonth
                 });
             }
             catch (BaseException apperr)
