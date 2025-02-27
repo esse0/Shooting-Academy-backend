@@ -107,7 +107,7 @@ namespace ShootingAcademy.Controllers
                     PatronymicName = string.Empty,
                     Email = model.email,
                     PasswordHash = _passwordHasher.Hash(model.password),
-                    Role = "Athlete",
+                    Role = "athlete",
                     Grade = "",
                     Age = 0,
                     Country = "",

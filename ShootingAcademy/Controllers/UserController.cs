@@ -74,7 +74,7 @@ namespace ShootingAcademy.Controllers
         }
 
         [HttpGet, Authorize(Roles = "admin")]
-        public async Task<IResult> GetUsers()
+        public async Task<IResult> GetUsersWithoutAdmin()
         {
             try
             {
@@ -97,5 +97,28 @@ namespace ShootingAcademy.Controllers
             }
         }
 
+        [HttpGet("athletes"), Authorize(Roles = "coach")]
+        public async Task<IResult> GetUsersWithoutCoaches()
+        {
+            try
+            {
+                var users = await dbContext.Users
+                    .Where(u => u.Role == "athlete")
+                    .AsNoTracking()
+                    .ToListAsync();
+
+                var result = users.Select(FullUserModel.FromEntity).ToList();
+
+                return Results.Json(result);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
     }
 }
