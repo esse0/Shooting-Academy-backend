@@ -106,10 +106,10 @@ namespace ShootingAcademy.Controllers
         {
             try
             {
-                if (newRole != "athlete" && newRole == "admin" && newRole != "moderator" && newRole != "coach" && newRole != "organisation")
-                {
+                string[] allowedRoles = ["athlete", "moderator", "coach", "organisation"];
+
+                if (!allowedRoles.Any(role => role == newRole))
                     throw new BaseException("Role not supported", 400);
-                }
 
                 var user = await dbContext.Users.FindAsync(Guid.Parse(userId));
 
