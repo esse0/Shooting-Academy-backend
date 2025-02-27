@@ -40,8 +40,8 @@ namespace ShootingAcademy.Controllers
                     country = competion.Country,
                     maxMemberCount = competion.MaxMembersCount,
                     memberCount = competion.Members?.Count ?? 0,
-                    date = competion.DateTime.ToLocalTime().ToShortDateString(),
-                    time = competion.DateTime.ToLocalTime().ToShortTimeString(),
+                    date = competion.DateTime.ToUniversalTime().ToString("yyyy-MM-dd"),
+                    time = competion.DateTime.ToUniversalTime().ToString("HH:mm"),
                     description = competion.Description,
                     exercise = competion.Exercise,
                     id = competion.Id.ToString(),
@@ -80,8 +80,8 @@ namespace ShootingAcademy.Controllers
                         country = competion.Country,
                         maxMemberCount = competion.MaxMembersCount,
                         memberCount = competion.Members.Count,
-                        date = competion.DateTime.ToLocalTime().ToShortDateString(),
-                        time = competion.DateTime.ToLocalTime().ToShortTimeString(),
+                        date = competion.DateTime.ToUniversalTime().ToString("yyyy-MM-dd"),
+                        time = competion.DateTime.ToUniversalTime().ToString("HH:mm"),
                         description = competion.Description,
                         exercise = competion.Exercise,
                         id = competion.Id.ToString(),
@@ -124,8 +124,8 @@ namespace ShootingAcademy.Controllers
                     id = c.Id.ToString(),
                     title = c.Title,
                     description = c.Description,
-                    date = c.DateTime.ToLocalTime().ToString("yyyy-MM-dd"),
-                    time = c.DateTime.ToLocalTime().ToString("HH:mm"),
+                    date = c.DateTime.ToUniversalTime().ToString("yyyy-MM-dd"),
+                    time = c.DateTime.ToUniversalTime().ToString("HH:mm"),
                     maxMemberCount = c.MaxMembersCount,
                     memberCount = c.Members.Count,
                     venue = c.Venue,
@@ -164,7 +164,9 @@ namespace ShootingAcademy.Controllers
                 if (competition.maxMemberCount <= 0)
                     throw new BaseException($"Max member count must be greater than 0.", 400);
 
-                if(!DateTime.TryParse(competition.date, out DateTime competitionDate))
+                competition.date = competition.date.Remove(competition.date.IndexOf('T'));
+
+                if (!DateTime.TryParse(competition.date, out DateTime competitionDate))
                     throw new BaseException("Invalid date or date format.", 400);
 
                 if (!DateTime.TryParse(competition.time, out DateTime competitionTime))

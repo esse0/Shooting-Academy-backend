@@ -1,4 +1,7 @@
-﻿namespace ShootingAcademy.Models.Controllers.Competition
+﻿using ShootingAcademy.Models.Exceptions;
+using System.ComponentModel.DataAnnotations;
+
+namespace ShootingAcademy.Models.Controllers.Competition
 {
     public class CompetionType
     {
