@@ -62,9 +62,9 @@ namespace ShootingAcademy.Controllers
                 var competitionGuid = Guid.Parse(competitionId);
 
                 var competition = await _context.Competitions
-                    .Include(c => c.Organisation) // Включаем организацию
-                    .Include(c => c.Members)      // Включаем участников
-                    .ThenInclude(m => m.Athlete)  // Включаем информацию о спортсменах (если у вас есть такая модель)
+                    .Include(c => c.Organisation)
+                    .Include(c => c.Members)   
+                    .ThenInclude(m => m.Athlete)
                     .FirstOrDefaultAsync(c => c.Id == competitionGuid);
 
                 if (competition == null)
