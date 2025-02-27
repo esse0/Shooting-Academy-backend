@@ -108,19 +108,21 @@ namespace ShootingAcademy.Controllers
                         instructor = FullUserModel.FromEntity(course.Instructor),
 
                         modules = course.Modules
-                            .Select(module => new ModuleModel
-                            {
-                                id = module.Id.ToString(),
-                                title = module.Title,
-                                lessons = module.Lessons
-                                    .Select(lesson => new LessonModel
-                                    {
-                                        id = lesson.Id.ToString(),
-                                        description = lesson.Description,
-                                        title = lesson.Title,
-                                        videoLink = lesson.VideoLink
-                                    }).ToList()
-                            }).ToList(),
+                        .OrderBy(module => module.Oder)
+                        .Select(module => new ModuleModel
+                        {
+                            id = module.Id.ToString(),
+                            title = module.Title,
+                            lessons = module.Lessons
+                                .OrderBy(lesson => lesson.Oder)
+                                .Select(lesson => new LessonModel
+                                {
+                                    id = lesson.Id.ToString(),
+                                    description = lesson.Description,
+                                    title = lesson.Title,
+                                    videoLink = lesson.VideoLink
+                                }).ToList()
+                        }).ToList(),
 
                         faqs = course.Faqs
                             .Select(faq => new FaqModel
@@ -309,17 +311,19 @@ namespace ShootingAcademy.Controllers
 
                 if (course.modules != null && course.modules.Any())
                 {
-                    newCourse.Modules = course.modules.Select(m => new Module
+                    newCourse.Modules = course.modules.Select((m, moduleIndex) => new Module
                     {
                         Id = Guid.NewGuid(),
                         Title = m.title,
                         CourseId = newCourse.Id,
-                        Lessons = m.lessons?.Select(l => new Lesson
+                        Oder = moduleIndex + 1,
+                        Lessons = m.lessons?.Select((l, lessonIndex) => new Lesson
                         {
                             Id = Guid.NewGuid(),
                             Title = l.title,
                             Description = l.description,
-                            VideoLink = l.videoLink
+                            VideoLink = l.videoLink,
+                            Oder = lessonIndex + 1
                         }).ToList() ?? new List<Lesson>()
                     }).ToList();
                 }

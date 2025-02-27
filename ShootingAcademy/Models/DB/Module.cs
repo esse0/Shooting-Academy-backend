@@ -17,6 +17,8 @@ namespace ShootingAcademy.Models.DB
         [ForeignKey(nameof(CourseId))]
         public Course Course { get; set; }
 
+        public int? Oder {  get; set; }
+
         public List<Lesson> Lessons { get; set; } = [];
     }
 }
