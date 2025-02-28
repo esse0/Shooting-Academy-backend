@@ -443,6 +443,145 @@ namespace ShootingAcademy.Controllers
         }
 
 
+        [HttpGet("myathletesoutofcompetition"), Authorize(Roles = "coach")]
+        public async Task<IResult> GetMyAthletesOutOfCompetition([FromQuery] string competitionId)
+        {
+            try
+            {
+                // Получаем ID тренера
+                Guid coachId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                // Проверка на правильность формата ID соревнования
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                {
+                    throw new BaseException("Bad id", code: 400);
+                }
+
+                // Получаем информацию о соревновании
+                var competition = await _context.Competitions
+                    .Include(c => c.Members) // Все участники соревнования
+                    .FirstOrDefaultAsync(c => c.Id == competitionGuid);
+
+                if (competition == null)
+                {
+                    throw new BaseException("Competition not found", code: 404);
+                }
+
+                // Проверка, что список членов соревнования не null
+                if (competition.Members == null)
+                {
+                    competition.Members = new List<CompetitionMember>(); // Инициализация пустого списка, если он null
+                }
+
+                // Получаем все группы атлетов тренера
+                var athleteGroups = await _context.AthleteGroups
+                    .Where(g => g.CoachId == coachId)
+                    .Include(g => g.Athletes)
+                    .ToListAsync();
+
+                // Проверка на наличие групп атлетов
+                if (athleteGroups == null || !athleteGroups.Any())
+                {
+                    throw new BaseException("Coach's athlete groups not found", code: 404);
+                }
+
+                // Проверка на наличие атлетов в группе
+                var athletesNotInCompetition = athleteGroups
+                    .SelectMany(g => g.Athletes) // Все атлеты из групп тренера
+                    .Where(a => a.Athlete != null && !competition.Members.Any(m => m.AthleteId == a.AthleteId)) // Фильтруем тех, кто не в соревновании
+                    .Select(a => new FullUserModel
+                    {
+                        Id = a.Athlete?.Id ?? Guid.Empty, // Если Athlete null, возвращаем Guid.Empty
+                        FirstName = a.Athlete?.FirstName ?? string.Empty,
+                        SecoundName = a.Athlete?.SecoundName ?? string.Empty,
+                        PatronymicName = a.Athlete?.PatronymicName ?? string.Empty,
+                        Age = a.Athlete?.Age ?? 0,
+                        Grade = a.Athlete?.Grade ?? string.Empty,
+                        Country = a.Athlete?.Country ?? string.Empty,
+                        City = a.Athlete?.City ?? string.Empty,
+                        Address = a.Athlete?.Address ?? string.Empty,
+                        Email = a.Athlete?.Email ?? string.Empty,
+                        Role = a.Athlete?.Role ?? string.Empty
+                    })
+                    .ToList();
+
+                // Возвращаем список атлетов, не участвующих в соревновании
+                return Results.Json(athletesNotInCompetition);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
+
+
+
+        [HttpGet("myathletesinthecompetition"), Authorize(Roles = "coach")]
+        public async Task<IResult> GetMyAthletesInTheCompetition([FromQuery] string competitionId)
+        {
+            try
+            {
+                Guid coachId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                {
+                    throw new BaseException("Bad id", code: 400);
+                }
+
+                var competition = await _context.Competitions
+                    .Include(c => c.Members)
+                    .FirstOrDefaultAsync(c => c.Id == competitionGuid);
+
+                if (competition == null)
+                {
+                    throw new BaseException("Competition not found", code: 404);
+                }
+
+                var athleteGroups = await _context.AthleteGroups
+                    .Where(g => g.CoachId == coachId)
+                    .Include(g => g.Athletes)
+                    .ToListAsync();
+
+                if (athleteGroups == null || !athleteGroups.Any())
+                {
+                    throw new BaseException("Coach's athlete groups not found", code: 404);
+                }
+
+                var athletesInCompetition = athleteGroups
+                    .SelectMany(g => g.Athletes)
+                    .Where(a => competition.Members.Any(m => m.AthleteId == a.AthleteId))
+                    .Select(a => new FullUserModel
+                    {
+                        Id = a.Athlete.Id,
+                        FirstName = a.Athlete.FirstName,
+                        SecoundName = a.Athlete.SecoundName,
+                        PatronymicName = a.Athlete?.PatronymicName ?? "",
+                        Age = a.Athlete?.Age ?? 0,
+                        Grade = a.Athlete?.Grade ?? "",
+                        Country = a.Athlete?.Country ?? "",
+                        City = a.Athlete?.City ?? "",
+                        Address = a.Athlete?.Address ?? "",
+                        Email = a.Athlete?.Email ?? "",
+                        Role = a.Athlete?.Role ?? ""
+                    }).ToList();
+
+                return Results.Json(athletesInCompetition);
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+            catch (Exception err)
+            {
+                return Results.Problem(err.Message, statusCode: 400);
+            }
+        }
+
+
         //[HttpDelete("deletemember"), Authorize(Roles = "coach")]
         //public async Task<IResult> DeleteMemberCompetition([FromQuery] string competitionId, [FromQuery] string userId)
         //{
