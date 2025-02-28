@@ -233,7 +233,7 @@ namespace ShootingAcademy.Controllers
         }
 
 
-        [HttpGet("admin"), Authorize(Roles = "organisator")] //сменить на admin
+        [HttpGet("admin"), Authorize(Roles = "moderator")]
         public async Task<IResult> GetAdminCourses()
         {
             try
