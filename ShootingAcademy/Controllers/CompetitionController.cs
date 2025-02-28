@@ -618,7 +618,9 @@ namespace ShootingAcademy.Controllers
                     }
                 }
 
-                var noncompAthletes = athletes.Where(ath => !competition.Members.Any(m => m.AthleteId == ath.Id));
+                var noncompAthletes = athletes
+                    .Where(ath => !competition.Members.Any(m => m.AthleteId == ath.Id))
+                    .Select(ath => FullUserModel.FromEntity(ath));
 
                 return Results.Json(noncompAthletes);
             }
