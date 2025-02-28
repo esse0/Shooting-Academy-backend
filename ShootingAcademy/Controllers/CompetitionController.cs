@@ -474,7 +474,7 @@ namespace ShootingAcademy.Controllers
 
                 string json = JsonSerializer.Serialize(members, _jsonSerializerOptions);
 
-                return Results.File(Encoding.UTF8.GetBytes(json), fileDownloadName: $"{competion.Title}_Members.json");
+                return Results.File(Encoding.UTF8.GetBytes(json), "application/json", fileDownloadName: $"{competion.Title}_Members.json");
             }
             catch (BaseException apperr)
             {
