@@ -398,6 +398,43 @@ namespace ShootingAcademy.Controllers
             }
         }
 
+        
+        [HttpDelete("deletemember"), Authorize(Roles = "coach")]
+        public async Task<IResult> DeleteMemberCompetition([FromQuery] string competitionId, [FromQuery] string userId)
+        {
+            try
+            {
+                var coachId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                    throw new BaseException("Competition id is not correct!");
+
+                if (!Guid.TryParse(userId, out Guid userGuid))
+                    throw new BaseException("User id is not correct!");
+
+                if (!await _context.Users.AnyAsync(u => u.Id == userGuid))
+                    throw new BaseException("User don`t found!", 404);
+
+                var competition = await _context.Competitions
+                    .Include(c => c.Members)
+                    .FirstOrDefaultAsync(c => c.Id == competitionGuid)
+                    ?? throw new BaseException("Competition don`t found!", 404);
+
+                var commem = competition.Members.FirstOrDefault(m => m.AthleteId == userGuid && m.CompetitionId == competitionGuid)
+                    ?? throw new BaseException("User not participate in this competition!");
+
+                _context.CompetitionMembers.Remove(commem);
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+        }
+
         [HttpGet("export"), Authorize(Roles = "organisator")]
         public async Task<IResult> ExportMembers([FromQuery] string competitionId)
         {
@@ -407,17 +444,20 @@ namespace ShootingAcademy.Controllers
 
                 var user = await _context.Users.FindAsync(userId);
 
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                    throw new BaseException("Competition id is not correct!");
+
                 var competion = await _context.Competitions
                     .Include(c => c.Members)
                     .ThenInclude(c => c.Athlete)
-                    .FirstOrDefaultAsync(c => c.Id == Guid.Parse(competitionId))
-                    ?? throw new BaseException("Competion not be found!", 404);
+                    .FirstOrDefaultAsync(c => c.Id == competitionGuid)
+                    ?? throw new BaseException("Competition not be found!", 404);
 
                 if (competion.OrganisationId != userId)
-                    throw new BaseException("Competion is not yours!", 403);
+                    throw new BaseException("Competition is not yours!", 403);
 
                 if (competion.Members.Count <= 0)
-                    throw new BaseException("Competion have zero members!");
+                    throw new BaseException("Competition have zero members!");
 
                 var members = competion.Members.Select(m =>
                 {
@@ -442,6 +482,76 @@ namespace ShootingAcademy.Controllers
             }
         }
 
+        [HttpPost("import"), Authorize(Roles = "organisator")]
+        public async Task<IResult> ImportMembers([FromQuery] string competitionId, [FromBody] CompetitionMemberResponse[] members)
+        {
+            try
+            {
+                Guid userId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                var user = await _context.Users.FindAsync(userId);
+
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                    throw new BaseException("Competition id is not correct!");
+
+                var competion = await _context.Competitions
+                    .Include(c => c.Members)
+                    .FirstOrDefaultAsync(c => c.Id == competitionGuid)
+                    ?? throw new BaseException("Competition not be found!", 404);
+
+                if (competion.OrganisationId != userId)
+                    throw new BaseException("Competition is not yours!", 403);
+
+                foreach (var member in members)
+                {
+                    if (!Guid.TryParse(member.id, out Guid memberId))
+                        throw new BaseException("One of users have worng id!");
+
+                    if (!_context.Users.Any(u => u.Id == memberId))
+                        throw new BaseException("One of users doesn`t exist!");
+
+                    if (competion.Members.Any(m => m.AthleteId == memberId))
+                        throw new BaseException("One of the users is already participating in the competition!");
+                }
+
+                await _context.CompetitionMembers.AddRangeAsync(members.Select(m =>
+                {
+                    return new CompetitionMember()
+                    {
+                        AthleteId = Guid.Parse(m.id),
+                        CompetitionId = competion.Id,
+                        Result = m.result
+                    };
+                }));
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+        }
+
+        [HttpPut("status"), Authorize(Roles = "organisator")]
+        public async Task<IResult> ChangeStatus([FromQuery] string competitionId, [FromQuery] string newStatus)
+        {
+            try
+            {
+                Guid userId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                    throw new BaseException("Competition id is not correct!");
+
+                var competition = await _context.Competitions.FindAsync(competitionGuid)
+                    ?? throw new BaseException("Competition not found!", 404);
+
+                if (competition.OrganisationId != userId)
+                    throw new BaseException("Competition is not yours!", 403);
+
+                if (!Enum.TryParse<Competition.ActiveStatus>(newStatus, out var status))
+                    throw new BaseException("Status can be only: (Pending, Active, Ended)");
 
         [HttpGet("myathletesoutofcompetition"), Authorize(Roles = "coach")]
         public async Task<IResult> GetMyAthletesOutOfCompetition([FromQuery] string competitionId)
@@ -586,6 +696,16 @@ namespace ShootingAcademy.Controllers
         //public async Task<IResult> DeleteMemberCompetition([FromQuery] string competitionId, [FromQuery] string userId)
         //{
 
-        //}
+                _context.Competitions.Update(competition);
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+        }
     }
 }
