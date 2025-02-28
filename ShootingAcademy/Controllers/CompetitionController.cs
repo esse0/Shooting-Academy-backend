@@ -515,10 +515,12 @@ namespace ShootingAcademy.Controllers
                     if (commem != null)
                     {
                         commem.Result = member.result;
+
+                        _context.CompetitionMembers.Update(commem);
                     } 
                     else
                     {
-                        _context.Add(new CompetitionMember()
+                        await _context.AddAsync(new CompetitionMember()
                         {
                             AthleteId = Guid.Parse(member.id),
                             CompetitionId = competion.Id,
