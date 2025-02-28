@@ -558,6 +558,7 @@ namespace ShootingAcademy.Controllers
                 if (!Enum.TryParse<Competition.ActiveStatus>(newStatus, out var status))
                     throw new BaseException("Status can be only: (Pending, Active, Ended)");
 
+                competition.Status = status;
 
                 _context.Competitions.Update(competition);
 
