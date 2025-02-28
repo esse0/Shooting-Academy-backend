@@ -502,7 +502,6 @@ namespace ShootingAcademy.Controllers
                 if (competion.OrganisationId != userId)
                     throw new BaseException("Competition is not yours!", 403);
 
-                List<CompetitionMemberResponse> finalMembers = [];
                 foreach (var member in members)
                 {
                     if (!Guid.TryParse(member.id, out Guid memberId))
@@ -511,22 +510,22 @@ namespace ShootingAcademy.Controllers
                     if (!_context.Users.Any(u => u.Id == memberId))
                         throw new BaseException("One of users doesn`t exist!");
 
-                    if (competion.Members.Any(m => m.AthleteId == memberId))
-                        continue;
-                        //throw new BaseException("One of the users is already participating in the competition!");
+                    var commem = competion.Members.FirstOrDefault(m => m.AthleteId == memberId);
 
-                    finalMembers.Add(member);
-                }
-
-                await _context.CompetitionMembers.AddRangeAsync(finalMembers.Select(m =>
-                {
-                    return new CompetitionMember()
+                    if (commem != null)
                     {
-                        AthleteId = Guid.Parse(m.id),
-                        CompetitionId = competion.Id,
-                        Result = m.result
-                    };
-                }));
+                        commem.Result = member.result;
+                    } 
+                    else
+                    {
+                        _context.Add(new CompetitionMember()
+                        {
+                            AthleteId = Guid.Parse(member.id),
+                            CompetitionId = competion.Id,
+                            Result = member.result
+                        });
+                    }
+                }
 
                 await _context.SaveChangesAsync();
 
