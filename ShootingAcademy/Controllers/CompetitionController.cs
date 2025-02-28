@@ -511,8 +511,9 @@ namespace ShootingAcademy.Controllers
                     if (!_context.Users.Any(u => u.Id == memberId))
                         throw new BaseException("One of users doesn`t exist!");
 
-                    //if (competion.Members.Any(m => m.AthleteId == memberId))
-                    //    throw new BaseException("One of the users is already participating in the competition!");
+                    if (competion.Members.Any(m => m.AthleteId == memberId))
+                        continue;
+                        //throw new BaseException("One of the users is already participating in the competition!");
 
                     finalMembers.Add(member);
                 }
