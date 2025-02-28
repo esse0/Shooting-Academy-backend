@@ -566,6 +566,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
+
         [HttpGet("myathletesoutofcompetition"), Authorize(Roles = "coach")]
         public async Task<IResult> GetMyAthletesOutOfCompetition([FromQuery] string competitionId)
         {
@@ -582,7 +583,7 @@ namespace ShootingAcademy.Controllers
 
                 // Получаем информацию о соревновании
                 var competition = await _context.Competitions
-                    .Include(c => c.Members) // Все участники соревнования
+                    .Include(c => c.Members)
                     .FirstOrDefaultAsync(c => c.Id == competitionGuid);
 
                 if (competition == null)
@@ -600,36 +601,26 @@ namespace ShootingAcademy.Controllers
                 var athleteGroups = await _context.AthleteGroups
                     .Where(g => g.CoachId == coachId)
                     .Include(g => g.Athletes)
+                    .ThenInclude(g => g.Athlete)
                     .ToListAsync();
 
                 // Проверка на наличие групп атлетов
                 if (athleteGroups == null || !athleteGroups.Any())
-                {
                     throw new BaseException("Coach's athlete groups not found", code: 404);
+
+                List<User> athletes = [];
+                foreach (var groups in athleteGroups)
+                {
+                    foreach (var athlete in groups.Athletes)
+                    {
+                        if (!athletes.Contains(athlete.Athlete))
+                            athletes.Add(athlete.Athlete);
+                    }
                 }
 
-                // Проверка на наличие атлетов в группе
-                var athletesNotInCompetition = athleteGroups
-                    .SelectMany(g => g.Athletes) // Все атлеты из групп тренера
-                    .Where(a => a.Athlete != null && !competition.Members.Any(m => m.AthleteId == a.AthleteId)) // Фильтруем тех, кто не в соревновании
-                    .Select(a => new FullUserModel
-                    {
-                        Id = a.Athlete?.Id ?? Guid.Empty, // Если Athlete null, возвращаем Guid.Empty
-                        FirstName = a.Athlete?.FirstName ?? string.Empty,
-                        SecoundName = a.Athlete?.SecoundName ?? string.Empty,
-                        PatronymicName = a.Athlete?.PatronymicName ?? string.Empty,
-                        Age = a.Athlete?.Age ?? 0,
-                        Grade = a.Athlete?.Grade ?? string.Empty,
-                        Country = a.Athlete?.Country ?? string.Empty,
-                        City = a.Athlete?.City ?? string.Empty,
-                        Address = a.Athlete?.Address ?? string.Empty,
-                        Email = a.Athlete?.Email ?? string.Empty,
-                        Role = a.Athlete?.Role ?? string.Empty
-                    })
-                    .ToList();
+                var noncompAthletes = athletes.Where(ath => !competition.Members.Any(m => m.AthleteId == ath.Id));
 
-                // Возвращаем список атлетов, не участвующих в соревновании
-                return Results.Json(athletesNotInCompetition);
+                return Results.Json(noncompAthletes);
             }
             catch (BaseException apperr)
             {
@@ -640,9 +631,6 @@ namespace ShootingAcademy.Controllers
                 return Results.Problem(err.Message, statusCode: 400);
             }
         }
-
-
-
 
         [HttpGet("myathletesinthecompetition"), Authorize(Roles = "coach")]
         public async Task<IResult> GetMyAthletesInTheCompetition([FromQuery] string competitionId)
