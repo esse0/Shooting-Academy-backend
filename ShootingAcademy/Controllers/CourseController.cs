@@ -233,7 +233,7 @@ namespace ShootingAcademy.Controllers
         }
 
 
-        [HttpGet("admin"), Authorize(Roles = "organisator")] //сменить на admin
+        [HttpGet("admin"), Authorize(Roles = "moderator")]
         public async Task<IResult> GetAdminCourses()
         {
             try
@@ -270,7 +270,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpPost("create"), Authorize(Roles = "organisator")] //сменить на admin
+        [HttpPost("create"), Authorize(Roles = "moderator")]
         public async Task<IResult> CreateCourse([FromBody] CourseModel course)
         {
             Random random = new Random();
@@ -378,7 +378,7 @@ namespace ShootingAcademy.Controllers
             }
         } 
 
-        [HttpDelete("delete"), Authorize(Roles = "organisator")] //сменить на admin
+        [HttpDelete("delete"), Authorize(Roles = "moderator")]
         public async Task<IResult> DeleteCourse([FromQuery] string courseId)
         {
             try
