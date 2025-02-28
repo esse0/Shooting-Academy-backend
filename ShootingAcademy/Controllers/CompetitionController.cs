@@ -398,6 +398,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
+        
         [HttpDelete("deletemember"), Authorize(Roles = "coach")]
         public async Task<IResult> DeleteMemberCompetition([FromQuery] string competitionId, [FromQuery] string userId)
         {
@@ -522,6 +523,39 @@ namespace ShootingAcademy.Controllers
                         Result = m.result
                     };
                 }));
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+        }
+
+        [HttpPut("status"), Authorize(Roles = "organisator")]
+        public async Task<IResult> ChangeStatus([FromQuery] string competitionId, [FromQuery] string newStatus)
+        {
+            try
+            {
+                Guid userId = AutorizeData.FromContext(HttpContext).UserGuid;
+
+                if (!Guid.TryParse(competitionId, out Guid competitionGuid))
+                    throw new BaseException("Competition id is not correct!");
+
+                var competition = await _context.Competitions.FindAsync(competitionGuid)
+                    ?? throw new BaseException("Competition not found!", 404);
+
+                if (competition.OrganisationId != userId)
+                    throw new BaseException("Competition is not yours!", 403);
+
+                if (!Enum.TryParse<Competition.ActiveStatus>(newStatus, out var status))
+                    throw new BaseException("Status can be only: (Pending, Active, Ended)");
+
+                competition.Status = status;
+
+                _context.Competitions.Update(competition);
 
                 await _context.SaveChangesAsync();
 
