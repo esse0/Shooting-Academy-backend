@@ -553,6 +553,19 @@ namespace ShootingAcademy.Controllers
                 if (!Enum.TryParse<Competition.ActiveStatus>(newStatus, out var status))
                     throw new BaseException("Status can be only: (Pending, Active, Ended)");
 
+
+                _context.Competitions.Update(competition);
+
+                await _context.SaveChangesAsync();
+
+                return Results.Ok();
+            }
+            catch (BaseException apperr)
+            {
+                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+            }
+        }
+
         [HttpGet("myathletesoutofcompetition"), Authorize(Roles = "coach")]
         public async Task<IResult> GetMyAthletesOutOfCompetition([FromQuery] string competitionId)
         {
@@ -630,6 +643,7 @@ namespace ShootingAcademy.Controllers
 
 
 
+
         [HttpGet("myathletesinthecompetition"), Authorize(Roles = "coach")]
         public async Task<IResult> GetMyAthletesInTheCompetition([FromQuery] string competitionId)
         {
@@ -688,23 +702,6 @@ namespace ShootingAcademy.Controllers
             catch (Exception err)
             {
                 return Results.Problem(err.Message, statusCode: 400);
-            }
-        }
-
-
-        //[HttpDelete("deletemember"), Authorize(Roles = "coach")]
-        //public async Task<IResult> DeleteMemberCompetition([FromQuery] string competitionId, [FromQuery] string userId)
-        //{
-
-                _context.Competitions.Update(competition);
-
-                await _context.SaveChangesAsync();
-
-                return Results.Ok();
-            }
-            catch (BaseException apperr)
-            {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
             }
         }
     }
