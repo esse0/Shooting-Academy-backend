@@ -620,13 +620,13 @@ namespace ShootingAcademy.Controllers
 
                 var noncompAthletes = athletes
                     .Where(ath => !competition.Members.Any(m => m.AthleteId == ath.Id))
-                    .Select(ath => FullUserModel.FromEntity(ath));
+                    .Select(FullUserModel.FromEntity);
 
                 return Results.Json(noncompAthletes);
             }
             catch (BaseException apperr)
             {
-                return Results.Json(apperr.GetModel(), statusCode: apperr.Code);
+                return Results.Json(apperr.GetModel(), statusCode: apperr. Code);
             }
             catch (Exception err)
             {
@@ -658,6 +658,7 @@ namespace ShootingAcademy.Controllers
                 var athleteGroups = await _context.AthleteGroups
                     .Where(g => g.CoachId == coachId)
                     .Include(g => g.Athletes)
+                    .ThenInclude(g => g.Athlete)
                     .ToListAsync();
 
                 if (athleteGroups == null || !athleteGroups.Any())
@@ -665,25 +666,21 @@ namespace ShootingAcademy.Controllers
                     throw new BaseException("Coach's athlete groups not found", code: 404);
                 }
 
-                var athletesInCompetition = athleteGroups
-                    .SelectMany(g => g.Athletes)
-                    .Where(a => competition.Members.Any(m => m.AthleteId == a.AthleteId))
-                    .Select(a => new FullUserModel
+                List<User> athletes = [];
+                foreach (var groups in athleteGroups)
+                {
+                    foreach (var athlete in groups.Athletes)
                     {
-                        Id = a.Athlete.Id,
-                        FirstName = a.Athlete.FirstName,
-                        SecoundName = a.Athlete.SecoundName,
-                        PatronymicName = a.Athlete?.PatronymicName ?? "",
-                        Age = a.Athlete?.Age ?? 0,
-                        Grade = a.Athlete?.Grade ?? "",
-                        Country = a.Athlete?.Country ?? "",
-                        City = a.Athlete?.City ?? "",
-                        Address = a.Athlete?.Address ?? "",
-                        Email = a.Athlete?.Email ?? "",
-                        Role = a.Athlete?.Role ?? ""
-                    }).ToList();
+                        if (!athletes.Contains(athlete.Athlete))
+                            athletes.Add(athlete.Athlete);
+                    }
+                }
 
-                return Results.Json(athletesInCompetition);
+                var noncompAthletes = athletes
+                    .Where(ath => competition.Members.Any(m => m.AthleteId == ath.Id))
+                    .Select(FullUserModel.FromEntity);
+
+                return Results.Json(noncompAthletes);
             }
             catch (BaseException apperr)
             {
