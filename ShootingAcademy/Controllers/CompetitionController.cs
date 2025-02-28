@@ -435,7 +435,7 @@ namespace ShootingAcademy.Controllers
             }
         }
 
-        [HttpGet("export"), Authorize(Roles = "organisator")]
+        [HttpGet("export"), Authorize]
         public async Task<IResult> ExportMembers([FromQuery] string competitionId)
         {
             try
@@ -474,6 +474,8 @@ namespace ShootingAcademy.Controllers
 
                 string json = JsonSerializer.Serialize(members, _jsonSerializerOptions);
 
+                Response.Headers.Append($"Content-Disposition", $"attachment; filename={competion.Title}_Members.json");
+
                 return Results.File(Encoding.UTF8.GetBytes(json), "application/json", fileDownloadName: $"{competion.Title}_Members.json");
             }
             catch (BaseException apperr)
@@ -509,9 +511,6 @@ namespace ShootingAcademy.Controllers
 
                     if (!_context.Users.Any(u => u.Id == memberId))
                         throw new BaseException("One of users doesn`t exist!");
-
-                    if (competion.Members.Any(m => m.AthleteId == memberId))
-                        throw new BaseException("One of the users is already participating in the competition!");
                 }
 
                 await _context.CompetitionMembers.AddRangeAsync(members.Select(m =>
